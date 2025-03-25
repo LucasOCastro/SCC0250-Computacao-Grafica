@@ -1,13 +1,16 @@
 from OpenGL.GL import *
 import numpy as np
+from typing import List
+from objects.object import Object
 
 class Renderer:
-    _bg_color = (1.0, 1.0, 1.0, 1.0)
 
     def __init__(self, vert_path: str, frag_path: str):
         self.program = glCreateProgram()
         self.vertex = self._compile_shader(GL_VERTEX_SHADER, vert_path, 'Vertex Shader')
         self.fragment = self._compile_shader(GL_FRAGMENT_SHADER, frag_path, 'Fragment Shader')
+        self.objects: List[Object] = []
+        self._bg_color = (1.0, 1.0, 1.0, 1.0)
 
         # Build program and make default
         glLinkProgram(self.program)
@@ -26,7 +29,7 @@ class Renderer:
         except IOError as e:
             print(f"Erro ao abrir {name}")
             raise e
-
+        
         shader = glCreateShader(shader_type)
         glShaderSource(shader, shader_code)
         
@@ -42,6 +45,11 @@ class Renderer:
     def render(self):
         glClear(GL_COLOR_BUFFER_BIT) 
         glClearColor(*self._bg_color)
+
+        for obj in self.objects:
+            self.setColor('color', obj.color)
+            self.setMat4('mat_transformation', obj.transformation_matrix)
+            obj.render()
 
     def setColor(self, name: str, color: tuple) -> None:
         if len(color) == 3:

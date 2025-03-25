@@ -4,6 +4,7 @@ from OpenGL.GL import *
 import numpy as np
 import glm
 from renderer import Renderer
+from objects.cube import Cube
 
 
 def main():
@@ -21,6 +22,7 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
+    renderer.objects.append(Cube((1.0, 0.0, 0.0)))
     glfw.show_window(window)
 
     while not glfw.window_should_close(window):
