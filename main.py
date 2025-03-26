@@ -22,7 +22,13 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
-    renderer.objects.append(Cube((1.0, 0.0, 0.0)))
+
+    example_cube = Cube((1.0, 0.0, 0.0))
+    example_cube.set_scale([0.25, 1.0,  0.1])
+    example_cube.set_rot_deg(np.array([0.0, 0.0, 45]))
+    example_cube.set_pos(np.array([1.0, 5.0, 0.0]))
+    renderer.objects.append(example_cube)
+
     glfw.show_window(window)
 
     while not glfw.window_should_close(window):
