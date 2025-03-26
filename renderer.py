@@ -22,7 +22,7 @@ class Renderer:
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    def _compile_shader(self, shader_type: any, shader_path: str, name: str):
+    def _compile_shader(self, shader_type: any, shader_path: str, name: str) -> any:
         try:
             with open(shader_path, 'r') as shader_file:
                 shader_code = shader_file.read()
@@ -42,21 +42,23 @@ class Renderer:
         glAttachShader(self.program, shader)
         return shader
     
-    def render(self):
+    def render(self) -> None:
         glClear(GL_COLOR_BUFFER_BIT) 
         glClearColor(*self._bg_color)
 
         for obj in self.objects:
-            self.setColor('color', obj.color)
-            self.setMat4('mat_transformation', obj.transformation_matrix)
-            obj.render()
+            obj.render(np.identity(4), self.set_params)
 
-    def setColor(self, name: str, color: tuple) -> None:
+    def set_params(self, color: tuple, mat_transformation: np.ndarray) -> None:
+        self.set_color('color', color)
+        self.set_mat4('mat_transformation', mat_transformation)
+
+    def set_color(self, name: str, color: tuple) -> None:
         if len(color) == 3:
             color = (*color, 1.0)
         glUniform4f(glGetUniformLocation(self.program, name), *color)
 
-    def setMat4(self, name: str, value: np.ndarray) -> None:
+    def set_mat4(self, name: str, value: np.ndarray) -> None:
         if value.shape != (1,16):
             value = value.flatten()
         glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_FALSE, value)

@@ -1,10 +1,10 @@
-from objects.object import Object
+from objects.meshobject import MeshObject
 import numpy as np
 
-class Cube(Object):
-    def __init__(self, color=(1.0, 0.0, 0.0, 1.0)):
-        super().__init__(color)
-        self.vertices = np.array([
+class Cube(MeshObject):
+    def __init__(self, color: tuple):
+
+        vertices = np.array([
             # Positions         # Normals
             -0.5, -0.5, -0.5,   0.0,  0.0, -1.0,  # Back face
              0.5, -0.5, -0.5,   0.0,  0.0, -1.0,
@@ -37,7 +37,7 @@ class Cube(Object):
             -0.5,  0.5,  0.5,   0.0,  1.0,  0.0,
         ], dtype=np.float32)
 
-        self.indices = np.array([
+        indices = np.array([
             0, 1, 2, 2, 3, 0,   # Back face
             4, 5, 6, 6, 7, 4,   # Front face
             8, 9, 10, 10, 11, 8, # Left face
@@ -46,4 +46,4 @@ class Cube(Object):
             20, 21, 22, 22, 23, 20  # Top face
         ], dtype=np.uint32)
 
-        self.setup_mesh()
+        super().__init__(color, vertices, indices)
