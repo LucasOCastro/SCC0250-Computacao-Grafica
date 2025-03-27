@@ -2,6 +2,7 @@ from OpenGL.GL import *
 import numpy as np
 from typing import List
 from matrixmath import *
+from renderer import Renderer
 
 class Object:
     def __init__(self):
@@ -48,8 +49,8 @@ class Object:
         self.pivot = np.array(pivot, dtype=np.float32)
         self.refresh_transformation_matrix()
 
-    def render(self, parent_transformation_matrix: np.ndarray, set_params: callable) -> None:
+    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
         world_mat = np.dot(parent_transformation_matrix, self.local_transformation_matrix)
         for child in self.children:
-            child.render(world_mat, set_params)
+            child.render(world_mat, renderer)
 

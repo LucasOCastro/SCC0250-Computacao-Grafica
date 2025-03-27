@@ -1,7 +1,5 @@
 from OpenGL.GL import *
 import numpy as np
-from typing import List
-from objects.object import Object
 
 class Renderer:
 
@@ -9,8 +7,6 @@ class Renderer:
         self.program = glCreateProgram()
         self.vertex = self._compile_shader(GL_VERTEX_SHADER, vert_path, 'Vertex Shader')
         self.fragment = self._compile_shader(GL_FRAGMENT_SHADER, frag_path, 'Fragment Shader')
-        self.objects: List[Object] = []
-        self._bg_color = (1.0, 1.0, 1.0, 1.0)
 
         # Build program and make default
         glLinkProgram(self.program)
@@ -41,17 +37,6 @@ class Renderer:
         
         glAttachShader(self.program, shader)
         return shader
-    
-    def render(self) -> None:
-        glClear(GL_COLOR_BUFFER_BIT) 
-        glClearColor(*self._bg_color)
-
-        for obj in self.objects:
-            obj.render(np.identity(4), self.set_params)
-
-    def set_params(self, color: tuple, mat_transformation: np.ndarray) -> None:
-        self.set_color('color', color)
-        self.set_mat4('mat_transformation', mat_transformation)
 
     def set_color(self, name: str, color: tuple) -> None:
         if len(color) == 3:

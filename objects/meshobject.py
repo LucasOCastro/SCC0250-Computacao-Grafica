@@ -1,6 +1,7 @@
 from objects.object import Object
 import numpy as np
 from OpenGL.GL import *
+from renderer import Renderer
 
 
 class MeshObject(Object):
@@ -31,11 +32,12 @@ class MeshObject(Object):
 
         glBindVertexArray(0)
 
-    def render(self, parent_transformation_matrix: np.ndarray, set_params: callable) -> None:
-        super().render(parent_transformation_matrix, set_params)
+    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
+        super().render(parent_transformation_matrix, renderer)
 
         world_mat = np.dot(parent_transformation_matrix, self.local_transformation_matrix)
-        set_params(self.color, world_mat)
+        renderer.set_color('color', self.color)
+        renderer.set_mat4('mat_transformation', world_mat)
 
         glBindVertexArray(self.vao)
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
