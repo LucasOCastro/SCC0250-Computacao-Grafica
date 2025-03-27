@@ -10,12 +10,24 @@ class Scene:
         self.objects: List[Object] = self.gen_objects()
 
     def gen_objects(self) -> List[Object]:
-        example_cube = Cube((1.0, 0.0, 0.0))
-        example_cube.set_scale([0.25, 1.0,  0.5])
-        example_cube.set_rot_deg(np.array([0.0, 100, 0]))
-        example_cube.set_pos(np.array([0.5, 0.0, 0.0]))
+        red_cube = Cube(single_color=(1, 0, 0, 1))
+        red_cube.set_scale([0.25, 0.5,  0.5])
+        red_cube.set_rot_deg(np.array([45, 45, 0]))
+        red_cube.set_pos(np.array([0.5, 0.0, 0.0]))
+
+        multi_cube = Cube(face_colors=[
+            (1, 0, 0, 1),
+            (0, 1, 0, 1),
+            (0, 0, 1, 1),
+            (1, 1, 0, 1),
+            (1, 0, 1, 1),
+            (0, 1, 1, 1),
+        ])
+        multi_cube.set_scale([0.5, 0.5, 0.9])
+        multi_cube.set_rot_deg(np.array([30, 60, 45]))
+        multi_cube.set_pos(np.array([-0.5, 0.0, 0.0]))
         
-        return [example_cube]
+        return [red_cube, multi_cube]
 
     def render_scene(self) -> None:
         for obj in self.objects:
