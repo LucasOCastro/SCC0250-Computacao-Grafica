@@ -13,14 +13,10 @@ class MeshObject(Object):
         self.vbo = glGenBuffers(1)
         self.ebo = glGenBuffers(1)
 
-    def __del__(self):
-        glDeleteVertexArrays(1, (self.vao,))
-        glDeleteBuffers(1, (self.vbo,))
-        glDeleteBuffers(1, (self.ebo,))
-
     def _setup_mesh(self):
-        assert self.vertices.size > 0 and self.indices.size > 0, "MeshObject's mesh is not initialized. Use set_data() method."
+        assert self.vertex_positions.size > 0 and self.normals.size > 0 and self.indices.size > 0, "MeshObject's mesh is not initialized. Use set_mesh() method."
 
+        self.vertices = np.hstack((self.vertex_positions, self.normals, self.colors)).flatten().astype(np.float32)
         glBindVertexArray(self.vao)
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
@@ -42,10 +38,27 @@ class MeshObject(Object):
 
         glBindVertexArray(0)
 
-    def set_data(self, vertices: np.ndarray, normals: np.ndarray, colors: np.ndarray, indices: np.ndarray):
-        self.vertices = np.hstack((vertices, normals, colors)).flatten().astype(np.float32)
-        self.indices = indices
+
+    def set_single_color(self, color: tuple):
+        '''Sets a single color for all vertices of the mesh.'''
+        colors = np.array([color] * len(self.vertex_positions), dtype=np.float32)
+        self.set_colors(colors)
+
+    def set_colors(self, colors: np.ndarray):
+        '''Sets the vertex colors.'''
+        self.colors = colors
         self._setup_mesh()
+
+    def set_mesh(self, vertex_positions: np.ndarray, normals: np.ndarray, indices: np.ndarray):
+        '''
+        Sets the mesh data, including vertex positions, normals and indices.
+        Resets the color to white.
+        '''
+        self.vertex_positions = vertex_positions
+        self.normals = normals
+        self.indices = indices
+        # Reset color to white and update mesh data
+        self.set_single_color((1, 1, 1, 1))
 
 
     def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
