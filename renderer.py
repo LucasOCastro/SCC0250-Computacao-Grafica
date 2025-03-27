@@ -44,6 +44,5 @@ class Renderer:
         glUniform4f(glGetUniformLocation(self.program, name), *color)
 
     def set_mat4(self, name: str, value: np.ndarray) -> None:
-        if value.shape != (1,16):
-            value = value.flatten()
-        glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_FALSE, value)
+        value = value.reshape(1,16)
+        glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_TRUE, value)

@@ -27,7 +27,14 @@ class Object:
 
         scale_mat = scale_matrix(self.scale)
 
-        self.local_transformation_matrix = translation_mat @ pivot_back_translation @ rotation_mat @ scale_mat @ pivot_translation
+        # self.local_transformation_matrix = translation_mat
+        self.local_transformation_matrix = multiply_transformations([
+            translation_mat,
+            pivot_back_translation,
+            rotation_mat,
+            scale_mat,
+            pivot_translation,
+        ])
 
 
     def set_pos(self, pos: np.ndarray):

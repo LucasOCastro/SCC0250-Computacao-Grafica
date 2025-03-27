@@ -1,5 +1,11 @@
 import numpy as np
 
+def multiply_transformations(matrices):
+    result = np.identity(4)
+    for matrix in matrices:
+        result = np.dot(result, matrix)
+    return result
+
 def rotation_matrix_x(angle):
     c, s = np.cos(angle), np.sin(angle)
     return np.array([
