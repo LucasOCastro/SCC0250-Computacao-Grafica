@@ -1,5 +1,7 @@
 from objects.meshobject import MeshObject
 import numpy as np
+from renderer import Renderer
+from matrixmath import *
 
 class Cube(MeshObject):
     FRONT = 0
