@@ -4,6 +4,9 @@ import numpy as np
 class Renderer:
 
     def __init__(self, vert_path: str, frag_path: str):
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LESS)
+
         self.program = glCreateProgram()
         self.vertex = self._compile_shader(GL_VERTEX_SHADER, vert_path, 'Vertex Shader')
         self.fragment = self._compile_shader(GL_FRAGMENT_SHADER, frag_path, 'Fragment Shader')

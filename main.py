@@ -28,7 +28,7 @@ def main():
 
     bg_color = (1.0, 1.0, 1.0, 1.0)
     while not glfw.window_should_close(window):
-        glClear(GL_COLOR_BUFFER_BIT) 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glClearColor(*bg_color)
 
         scene.render_scene()
