@@ -7,31 +7,6 @@ class Cylinder(MeshObject):
 
     def __init__(self, slices=36, radius=0.5, length=0.5, top_color=(1, 1, 1, 1), bottom_color=(1, 1, 1, 1), side_color=(1, 1, 1, 1)):
         super().__init__(render_mode=GL_TRIANGLE_STRIP)
-        # self.radius = radius
-        # self.length = length
-        # self.top_color = top_color
-        # self.bottom_color = bottom_color
-        # self.side_color = side_color
-
-        # vertices = np.zeros(((slices+1)*2, 3))
-        # indices = np.array([])
-        # normals = np.zeros(((slices+1)*2, 3))
-
-        # angle_step = 2*np.pi/slices
-        # for i in range(0, slices + 1):
-        #     x = np.cos(angle_step*i) * radius
-        #     y = np.sin(angle_step*i) * radius
-        #     #top
-        #     vertices[i*2] = [x, y, length/2]
-        #     normals[i*2] = [x, y, 0]
-        #     #bottom
-        #     vertices[i*2+1] = [x, y, -length/2]
-        #     normals[i*2 +1] = [x, y, 0]
-            
-        # #indices
-        # for i in range(slices):
-        #     indices = np.append(indices, [i*2, i*2+1])
-        # print(indices)
         self.radius = radius
         self.length = length
         self.top_color = top_color
