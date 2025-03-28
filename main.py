@@ -27,7 +27,7 @@ def main():
     renderer = Renderer(vert_path, frag_path)
     scene = Scene(renderer)
 
-    # input = Input(scene.frog)
+    input = Input(scene.frog)
 
     glfw.show_window(window)
 
@@ -38,7 +38,7 @@ def main():
         delta_time = current_time - last_time
         last_time = current_time
 
-        # input.set_delta_time(delta_time)
+        input.set_delta_time(delta_time)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glClearColor(*bg_color)
