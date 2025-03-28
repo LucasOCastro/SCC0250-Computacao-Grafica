@@ -6,7 +6,6 @@ import functools
 class Input:
     def __init__(self, frog: Frog):
         self.rotation_speed = 100
-        self.frog_throat_scale_speed = 10
         self.frog = frog
 
         # Bind self to the callback
@@ -23,10 +22,10 @@ class Input:
             self.frog.rotate_deg(-self.rotation_speed * self._delta_time, np.array([0, 1, 0]))
 
         if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.frog.animate(self._delta_time * self.frog_throat_scale_speed)
+            self.frog.animate(self._delta_time)
 
         if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.frog.animate(-self._delta_time * self.frog_throat_scale_speed)
+            self.frog.animate(-self._delta_time)
 
 
     def set_delta_time(self, delta_time: float) -> None:

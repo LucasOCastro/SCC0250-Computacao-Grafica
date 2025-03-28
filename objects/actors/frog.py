@@ -12,10 +12,10 @@ class Frog(Object):
     ANIMATION_MIN_HEAD_ROTATION = 0
     ANIMATION_MAX_HEAD_ROTATION = 60
     ANIMATION_MIN_HEAD_POSITION = np.array([0, 0.65, -0.5])
-    ANIMATION_MAX_HEAD_POSITION = np.array([0, 0.7, -0.45])
-    ANIMATION_MIN_THROAT_SCALE = .15
+    ANIMATION_MAX_HEAD_POSITION = np.array([0, 0.7, -0.3])
+    ANIMATION_MIN_THROAT_SCALE = 0
     ANIMATION_MAX_THROAT_SCALE = .8
-    ANIMATION_LENGTH = 10
+    ANIMATION_LENGTH = .7
 
     def __init__(self):
         super().__init__()
@@ -48,6 +48,12 @@ class Frog(Object):
         self.throat_animation_progress += delta_time
         self.throat_animation_progress = max(0, min(self.ANIMATION_LENGTH, self.throat_animation_progress))
         normalized_progress = self.throat_animation_progress / self.ANIMATION_LENGTH
+
+        # Cubic Ease-In-Out 
+        if normalized_progress < 0.5:
+            normalized_progress = 4 * normalized_progress ** 3
+        else:
+            normalized_progress = 1 - (-2 * normalized_progress + 2) ** 3 / 2
 
         new_rot = self.ANIMATION_MIN_HEAD_ROTATION + normalized_progress * (self.ANIMATION_MAX_HEAD_ROTATION - self.ANIMATION_MIN_HEAD_ROTATION)
         self.head.set_rot_deg([new_rot, 0, 0])
@@ -110,8 +116,8 @@ class Frog(Object):
         eye.set_pos([0.25 * side_multiplier, 0.2, -0.5])
 
         pupil = Cube(color=(0, 0, 0, 1))
-        pupil.set_scale([0.2, 0.2, 0.2])
-        pupil.set_pos([0.25 * side_multiplier, 0.2, -0.5])
+        pupil.set_scale([0.5, 0.8, 0.2])
+        pupil.set_pos([0, 0.02, -0.5])
         eye.children.append(pupil)
 
         return eye
@@ -134,6 +140,6 @@ class Frog(Object):
     
     def _make_throat(self) -> Sphere:
         throat = Sphere(color=self.THROAT_COLOR)
-        throat.set_scale([0.2, 0.2, 0.2])
+        throat.set_scale_single(self.ANIMATION_MIN_THROAT_SCALE)
         throat.set_pos([0, 0.35, -0.5])
         return throat
