@@ -14,7 +14,6 @@ class Object:
         self.children: List[Object] = []
         self.pivot = np.array([0.0, 0.0, 0.0], dtype=np.float32)
 
-    #TODO consider incremental matrix modification for translate, rotate, scale, etc
     def refresh_transformation_matrix(self):
         translation_mat = translation_matrix(self.position)
         pivot_translation = translation_matrix(-self.pivot)
@@ -60,6 +59,18 @@ class Object:
     def set_scale(self, scale: np.ndarray):
         self.scale = np.array(scale, dtype=np.float32)
         self.refresh_transformation_matrix()
+    
+    def set_scale_single(self, scale: float):
+        self.set_scale(np.array([scale, scale, scale], dtype=np.float32))
+
+    def scale_by(self, scale: np.ndarray):
+        self.scale += scale
+        scale_mat = scale_matrix(scale)
+        self.local_transformation_matrix = multiply_transformations([scale_mat, self.local_transformation_matrix])
+
+    def scale_by_single(self, scale: float):
+        self.scale_by(np.array([scale, scale, scale], dtype=np.float32))
+        
 
     def set_pivot(self, pivot: np.ndarray):
         self.pivot = np.array(pivot, dtype=np.float32)
