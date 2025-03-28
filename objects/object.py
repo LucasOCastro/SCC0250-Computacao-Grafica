@@ -19,12 +19,7 @@ class Object:
         translation_mat = translation_matrix(self.position)
         pivot_translation = translation_matrix(-self.pivot)
         pivot_back_translation = translation_matrix(self.pivot)
-
-        rot_x = rotation_matrix_x(self.rotation[0])
-        rot_y = rotation_matrix_y(self.rotation[1])
-        rot_z = rotation_matrix_z(self.rotation[2])
-        rotation_mat = np.dot(rot_z, np.dot(rot_y, rot_x))
-
+        rotation_mat = rotation_matrix_all(self.rotation)
         scale_mat = scale_matrix(self.scale)
 
         # self.local_transformation_matrix = translation_mat
@@ -41,12 +36,26 @@ class Object:
         self.position = np.array(pos, dtype=np.float32)
         self.refresh_transformation_matrix()
 
+    def translate(self, delta: np.ndarray):
+        self.position += delta
+        translation_mat = translation_matrix(delta)
+        self.local_transformation_matrix = multiply_transformations([translation_mat, self.local_transformation_matrix])
+
     def set_rot_rad(self, rot: np.ndarray):
         self.rotation = np.array(rot, dtype=np.float32)
         self.refresh_transformation_matrix()
 
     def set_rot_deg(self, rot: np.ndarray):
         self.set_rot_rad(np.deg2rad(rot))
+
+    def rotate_rad(self, radian: float, axis: np.ndarray):
+        rotation = np.array(axis, dtype=np.float32) * radian
+        self.rotation += rotation
+        rotation_mat = rotation_matrix_all(rotation)
+        self.local_transformation_matrix = multiply_transformations([rotation_mat, self.local_transformation_matrix])
+
+    def rotate_deg(self, degree: float, axis: np.ndarray):
+        self.rotate_rad(np.deg2rad(degree), axis)
 
     def set_scale(self, scale: np.ndarray):
         self.scale = np.array(scale, dtype=np.float32)
