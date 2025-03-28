@@ -5,8 +5,9 @@ from renderer import Renderer
 
 
 class MeshObject(Object):
-    def __init__(self):
+    def __init__(self, render_mode=GL_TRIANGLES):
         super().__init__()
+        self.render_mode = render_mode
         self.vertices = np.array([])
         self.indices = np.array([])
         self.vao = glGenVertexArrays(1)
@@ -68,5 +69,5 @@ class MeshObject(Object):
         renderer.set_mat4('mat_transformation', world_mat)
 
         glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
+        glDrawElements(self.render_mode, len(self.indices), GL_UNSIGNED_INT, None)
         glBindVertexArray(0)
