@@ -6,7 +6,7 @@ from OpenGL.GL import *
 class Cylinder(MeshObject):
 
     def __init__(self, slices=36, radius=0.5, length=0.5, top_color=(1, 1, 1, 1), bottom_color=(1, 1, 1, 1), side_color=(1, 1, 1, 1)):
-        super().__init__(render_mode=GL_TRIANGLE_STRIP)
+        super().__init__(render_mode=GL_TRIANGLES)
         self.radius = radius
         self.length = length
         self.top_color = top_color
@@ -23,17 +23,17 @@ class Cylinder(MeshObject):
         for i in range(slices + 1):
             angle = i * angle_step
             x = np.cos(angle) * radius
-            y = np.sin(angle) * radius
+            z = np.sin(angle) * radius
 
             # Topo
-            vertices.append([x, y, length / 2])   # Posição
-            normals.append([x, y, 0])             # Normal
+            vertices.append([x, length / 2, z])   # Posição
+            normals.append([x, 0, z])             # Normal
 
             # Base
-            vertices.append([x, y, -length / 2])
-            normals.append([x, y, 0])
+            vertices.append([x,-length / 2, z])
+            normals.append([x, 0, z])
 
-        # Criar índice da lateral (GL_TRIANGLE_STRIP)
+        # Criar índice da lateral 
         for i in range(slices):
             indices.extend([i * 2, i * 2 + 1])
 
@@ -41,10 +41,10 @@ class Cylinder(MeshObject):
         top_center_index = len(vertices) // 3
         bottom_center_index = top_center_index + 1
 
-        vertices.append([0, 0, length / 2])   # Centro do topo
-        normals.append([0, 0, 1])             # Normal para cima
-        vertices.append([0, 0, -length / 2])  # Centro da base
-        normals.append([0, 0, -1])            # Normal para baixo
+        vertices.append([0, length / 2, 0])   # Centro do topo
+        normals.append([0, 1, 0])             # Normal para cima
+        vertices.append([0, -length / 2, 0 ])  # Centro da base
+        normals.append([0, -1, 0])            # Normal para baixo
 
         # Criar os índices para as tampas
         for i in range(slices):
