@@ -6,7 +6,7 @@ from OpenGL.GL import *
 class Cylinder(MeshObject):
 
     def __init__(self, slices=36, radius=0.5, length=0.5, top_color=(1, 1, 1, 1), bottom_color=(1, 1, 1, 1), side_color=(1, 1, 1, 1)):
-        super().__init__(render_mode=GL_TRIANGLES)
+        super().__init__(render_mode=GL_TRIANGLE_STRIP)
         self.radius = radius
         self.length = length
         self.top_color = top_color
