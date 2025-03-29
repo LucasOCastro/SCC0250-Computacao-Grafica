@@ -4,11 +4,11 @@ from objects.object import Object
 from objects.primitives.cylinder import Cylinder
 from objects.primitives.cube import Cube
 
-DARK_GREEN = (0, 80, 0, 1)
-LIGHT_GREEN = (0, 120, 0, 1)
+DARK_GREEN = (0, 80/255, 0, 1)
+LIGHT_GREEN = (127/255, 152/255, 86/255, 1)
 
 class LillyPad(Object):
-    def __init__(self, slices=16, length=0.1, radius=0.5):
+    def __init__(self, slices=32, length=0.1, radius=0.5):
         super().__init__()
         self.slices = slices
         self.radius = radius
@@ -31,17 +31,16 @@ class LillyPad(Object):
         outline_part_size = 2*np.pi*self.radius / self.slices
         for i in range(self.slices):
             #calcula a media entre o atual e o próximo para saber o centro
-            x = np.cos(angle_step*i)*self.radius
-            z = np.sin(angle_step*i)*self.radius
-            xnext = np.cos(angle_step*(i+1))*self.radius
-            znext = np.sin(angle_step*(i+1))*self.radius
-            xcube = (x + xnext) / 2
-            zcube = (z + znext) / 2
-            outline_part = Cube(size=1, color=(1.0, 0, 0, 1))
-            #
-            outline_part.set_scale([outline_part_size, self.length/2, 0.1])
-            outline_part.set_pos([xcube, self.length/2, zcube])
-            outline_part.set_rot_rad([0,i*angle_step , 0 ])
+            x = np.cos(angle_step*i)*self.radius*0.99
+            z = np.sin(angle_step*i)*self.radius*0.99
+            outline_part = Cube(size=1, color=(LIGHT_GREEN))
+            #posicionando o paralelepipedo
+            outline_part.set_scale([outline_part_size, self.length/2, self.length/8])
+            outline_part.rotate_rad( -(np.pi/2+i*angle_step*1.00), [0, 1, 0])
+            outline_part.set_pos([x, self.length*0.75 , z])
+            #gira a parte em torno da origem e não em torno dela mesma
+            outline_part.rotate_rad(angle_step/2, [0, 1, 0])
+            
             outlines.append(outline_part)
           
 
