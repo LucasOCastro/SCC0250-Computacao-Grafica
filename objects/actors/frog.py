@@ -1,7 +1,6 @@
 import numpy as np
 from objects.object import Object
-from objects.primitives.sphere import Sphere
-from objects.primitives.cube import Cube
+from objects.primitives import Sphere, Cube
 
 class Frog(Object):
     MAIN_COLOR = (.1, .9, .1, 1)

@@ -1,8 +1,7 @@
 from renderer import Renderer
 from objects.object import Object
 from typing import List
-from objects.primitives.cube import Cube
-from objects.primitives.sphere import Sphere
+from objects.primitives import Cube, Sphere
 from objects.actors.frog import Frog
 import numpy as np
 

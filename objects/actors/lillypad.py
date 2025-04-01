@@ -1,8 +1,7 @@
 
 import numpy as np
 from objects.object import Object
-from objects.primitives.cylinder import Cylinder
-from objects.primitives.cube import Cube
+from objects.primitives import Cube, Cylinder
 
 DARK_GREEN = (0, 80/255, 0, 1)
 LIGHT_GREEN = (127/255, 152/255, 86/255, 1)
