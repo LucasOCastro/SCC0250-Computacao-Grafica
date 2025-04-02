@@ -1,8 +1,6 @@
 import math
 import glfw
 from OpenGL.GL import *
-import numpy as np
-import glm
 from input import Input
 from renderer import Renderer
 from scene import Scene
@@ -27,7 +25,7 @@ def main():
     renderer = Renderer(vert_path, frag_path)
     scene = Scene(renderer)
 
-    input = Input(scene.frog)
+    input = Input(scene)
 
     glfw.show_window(window)
 
