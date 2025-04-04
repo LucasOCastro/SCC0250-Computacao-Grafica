@@ -55,6 +55,9 @@ class MeshObject(Object):
         Sets the mesh data, including vertex positions, normals and indices.
         Resets the color to white.
         '''
+        assert vertex_positions.shape[0] == normals.shape[0], "MeshObject's mesh must have the same number of vertices and normals."
+        assert vertex_positions.shape[0] > 0 and normals.shape[0] > 0 and indices.shape[0] > 0, "MeshObject's mesh can't be empty."
+
         self.vertex_positions = vertex_positions
         self.normals = normals
         self.indices = indices
@@ -71,3 +74,38 @@ class MeshObject(Object):
         glBindVertexArray(self.vao)
         glDrawElements(self.render_mode, len(self.indices), GL_UNSIGNED_INT, None)
         glBindVertexArray(0)
+
+    @staticmethod
+    def merge_meshes(meshes: list["MeshObject"]) -> "MeshObject":
+        vertex_positions = []
+        normals = []
+        colors = []
+        indices = []
+
+        vertex_count = 0
+        for mesh in meshes:
+            # Apply transform to vertex positions
+            transform = mesh.local_transformation_matrix
+            transformed_positions = [transform @ np.array([*vp, 1]) for vp in mesh.vertex_positions]
+            transformed_positions = [vp[:3] for vp in transformed_positions]
+
+            # Apply transform to normals (ignore translation)
+            normal_transform = np.array(mesh.local_transformation_matrix)
+            normal_transform[3] = np.array([0, 0, 0, 1])
+            transformed_normals = [normal_transform @ np.array([*n, 1]) for n in mesh.normals]
+            transformed_normals = [n[:3] for n in transformed_normals]
+            
+            vertex_positions.extend(transformed_positions)
+            normals.extend(transformed_normals)
+            colors.extend(mesh.colors)
+
+            adjusted_indices = mesh.indices + vertex_count
+            indices.extend(adjusted_indices)
+
+            vertex_count += len(mesh.vertex_positions)
+
+        combined = MeshObject()
+        combined.set_mesh(np.array(vertex_positions), np.array(normals), np.array(indices))
+        combined.set_colors(np.array(colors))
+
+        return combined
