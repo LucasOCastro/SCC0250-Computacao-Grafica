@@ -126,6 +126,8 @@ class Frog(Object):
         head.set_face_color(Cube.BOTTOM, self.SHADOW_COLOR)
         head.set_face_color(Cube.TOP, self.HIGHLIGHT_COLOR)
         head.set_face_color(Cube.FRONT, self.HIGHLIGHT_COLOR)
+        head.set_face_color(Cube.RIGHT, self.HIGHLIGHT_COLOR)
+        head.set_face_color(Cube.LEFT, self.HIGHLIGHT_COLOR)
         head.set_scale([0.8, 0.6, 0.45])
         head.set_pos(self.ANIMATION_MIN_HEAD_POSITION)
 
