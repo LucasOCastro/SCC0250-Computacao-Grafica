@@ -1,9 +1,9 @@
-import math
 import glfw
 from OpenGL.GL import *
 from input import Input
 from renderer import Renderer
 from scene import Scene
+from matrixmath import *
 
 
 def main():
@@ -20,12 +20,17 @@ def main():
     # vsync to cap fps
     glfw.swap_interval(1)
 
+    world_rotation_deg = np.array([-30, 0, 0], dtype=np.float32)
+    world_rotation_rad = np.deg2rad(world_rotation_deg)
+    world_rotation_mat = rotation_matrix_all(world_rotation_rad)
+    world_up = (world_rotation_mat @ np.array([0, 1, 0, 1], dtype=np.float32))[:-1]
+
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
-    scene = Scene(renderer)
+    scene = Scene(renderer, world_rotation_rad=world_rotation_rad)
 
-    input = Input(scene)
+    input = Input(scene, world_up=world_up)
 
     glfw.show_window(window)
 

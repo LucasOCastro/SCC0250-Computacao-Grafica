@@ -1,40 +1,30 @@
 from renderer import Renderer
 from objects.object import Object
 from typing import List
-from objects.primitives import Cube, Sphere
 from objects.actors.frog import Frog
+from objects.actors.tree import Tree
+from objects.actors.lillypad import LillyPad
+from matrixmath import *
 import numpy as np
 
 class Scene:
-    def __init__(self, renderer: Renderer):
+    def __init__(self, renderer: Renderer, world_rotation_rad: np.ndarray = np.array([0.0, 0.0, 0.0])):
         self.renderer = renderer
+        self.world_rotation_rad = np.array(world_rotation_rad, dtype=np.float32)
         self.objects: List[Object] = self.gen_objects()
 
     def gen_objects(self) -> List[Object]:
-        # red_cube = Cube(color=(1, 0, 0, 1))
-        # red_cube.set_scale([0.25, 0.5,  0.5])
-        # red_cube.set_rot_deg(np.array([45, 45, 0]))
-        # red_cube.set_pos(np.array([0.5, 0.0, 0.0]))
-
-        # multi_cube = Cube()
-        # multi_cube.set_face_color(Cube.FRONT, (0, 1, 0, 1))
-        # multi_cube.set_face_color(Cube.BACK, (0, 0, 1, 1))
-        # multi_cube.set_face_color(Cube.LEFT, (1, 1, 0, 1))
-        # multi_cube.set_face_color(Cube.RIGHT, (1, 0, 1, 1))
-        # multi_cube.set_face_color(Cube.TOP, (0, 1, 1, 1))
-        # multi_cube.set_face_color(Cube.BOTTOM, (1, 0, 0, 1))
-        # multi_cube.set_scale([0.5, 0.5, 0.9])
-        # multi_cube.set_rot_deg(np.array([30, 60, 45]))
-        # multi_cube.set_pos(np.array([-0.5, 0.0, 0.0]))
-
-        # the_ball = Sphere(color=(0,1,0,1))
-        # the_ball.set_scale([0.25, 0.25, 0.25])
-
-        # return [red_cube, multi_cube, the_ball]
+        self.lillypad = LillyPad()
+        self.lillypad.set_scale_single(.3)
+        self.lillypad.set_rot_rad(self.world_rotation_rad)
 
         self.frog = Frog()
-        self.frog.set_scale([0.7, .7, .7])
-        return [self.frog]
+        self.frog.set_scale_single(.36)
+        self.frog.set_pos([0, .2, 0])
+        self.lillypad.children.append(self.frog)
+        
+        return [self.lillypad]
+
 
     def render_scene(self) -> None:
         for obj in self.objects:
