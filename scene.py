@@ -27,13 +27,20 @@ class Scene:
         self.lillypad.set_scale_single(.3)
         self.lillypad.set_rot_rad(self.world_rotation_rad)
         self.translate_object(self.lillypad, np.array([0, .15, -.5]))
+        # self.lillypad_size = np.array([.3, 0, .3])
+        self.lillypad_size = np.array([.25, 0, .1])
 
         self.frog = Frog()
         self.frog.set_scale_single(.36)
         self.frog.set_pos([0, .2, 0])
         self.lillypad.children.append(self.frog)
+
+        self.tree = Tree()
+        self.tree.set_scale_single(.25)
+        self.tree.set_rot_rad(self.world_rotation_rad)
+        self.translate_object(self.tree, np.array([0, .5, .2]))
         
-        return [self.floor, self.lillypad]
+        return [self.floor, self.lillypad, self.tree]
     
     def rotate_object_deg(self, obj: Object, angle_deg: np.ndarray) -> None:
         angle_rad = np.deg2rad(angle_deg)

@@ -76,6 +76,11 @@ class Object:
         self.pivot = np.array(pivot, dtype=np.float32)
         self.refresh_transformation_matrix()
 
+    def world_to_local(self, point: np.ndarray) -> np.ndarray:
+        if len(point) == 3:
+            point = np.append(point, 1)
+        return np.dot(np.linalg.inv(self.local_transformation_matrix), point)[:-1]
+
     def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
         world_mat = np.dot(parent_transformation_matrix, self.local_transformation_matrix)
         for child in self.children:

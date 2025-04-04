@@ -39,21 +39,29 @@ class Input:
 
     def _handle_pad_input(self, delta_time: float) -> None:
         lillypad = self.scene.lillypad
-
-        trans = self.translation_speed * delta_time
-        if glfw.KEY_W in self.keys_pressed:
-            self.scene.translate_object(lillypad, np.array([0, 0, trans]))
-        if glfw.KEY_S in self.keys_pressed:
-            self.scene.translate_object(lillypad, np.array([0, 0, -trans]))
-        if glfw.KEY_A in self.keys_pressed:
-            self.scene.translate_object(lillypad, np.array([-trans, 0, 0]))
-        if glfw.KEY_D in self.keys_pressed:
-            self.scene.translate_object(lillypad, np.array([trans, 0, 0]))
-
-        rot = self.rotation_speed * delta_time
+        
+        rotation_delta = self.rotation_speed * delta_time
         if glfw.KEY_Q in self.keys_pressed:
-            self.scene.rotate_object_deg(lillypad, rot)
+            self.scene.rotate_object_deg(lillypad, rotation_delta)
         if glfw.KEY_E in self.keys_pressed:
-            self.scene.rotate_object_deg(lillypad, -rot)
+            self.scene.rotate_object_deg(lillypad, -rotation_delta)
+
+        translation_direction = np.zeros(3)
+        if glfw.KEY_W in self.keys_pressed:
+            translation_direction[2] += 1
+        if glfw.KEY_S in self.keys_pressed:
+            translation_direction[2] -= 1
+        if glfw.KEY_A in self.keys_pressed:
+            translation_direction[0] -= 1
+        if glfw.KEY_D in self.keys_pressed:
+            translation_direction[0] += 1
+        
+        direction_magnitude = np.linalg.norm(translation_direction)
+        if direction_magnitude > 0:
+            translation_direction /= direction_magnitude
+            translation_delta = translation_direction * self.translation_speed * delta_time
+            if (self.scene.floor.are_corners_in_water(lillypad.position + translation_delta, self.scene.lillypad_size)):
+                self.scene.translate_object(lillypad, translation_delta)
+
 
         
