@@ -93,3 +93,7 @@ class Object:
         for child in self.children:
             child.render(world_mat, renderer)
 
+    def destroy(self):
+        for child in self.children:
+            child.destroy()
+

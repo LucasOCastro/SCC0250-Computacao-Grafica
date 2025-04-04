@@ -75,6 +75,14 @@ class MeshObject(Object):
         glDrawElements(self.render_mode, len(self.indices), GL_UNSIGNED_INT, None)
         glBindVertexArray(0)
 
+    def destroy(self):
+        super().destroy()
+        
+        glDeleteVertexArrays(1, [self.vao])
+        glDeleteBuffers(1, [self.vbo])
+        glDeleteBuffers(1, [self.ebo])
+
+
     @staticmethod
     def merge_meshes(meshes: list["MeshObject"]) -> "MeshObject":
         vertex_positions = []

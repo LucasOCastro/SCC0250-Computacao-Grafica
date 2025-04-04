@@ -50,6 +50,7 @@ def main():
         glfw.swap_buffers(window)
         glfw.poll_events()
 
+    scene.container.destroy()
     glfw.terminate()
 
 

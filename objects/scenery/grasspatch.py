@@ -24,13 +24,15 @@ class GrassPatch(Object):
         self.line_count = line_count
         self.count_per_line = count_per_line
 
-        #TODO destroy all cubes
         cubes = self._make_grass_cubes()
         if len(cubes) == 0:
             return
 
         squashed = MeshObject.merge_meshes(cubes)
         self.children.append(squashed)
+
+        for cube in cubes:
+            cube.destroy()
 
 
     def _make_grass_cubes(self):
