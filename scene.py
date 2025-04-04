@@ -14,19 +14,19 @@ class Scene:
         self.world_rotation_rad = np.array(world_rotation_rad, dtype=np.float32)
         self.world_up = (rotation_matrix_all(self.world_rotation_rad) @ np.array([0, 1, 0, 1], dtype=np.float32))[:-1]
 
-        self.objects: List[Object] = self.gen_objects()
+        self.gen_objects();
 
-    def gen_objects(self) -> List[Object]:
+    def gen_objects(self):
+        self.container = Object()
+        self.container.set_rot_rad(self.world_rotation_rad)
+
         self.floor = Floor()
         self.floor.set_scale([1.5, 1, 1.5])
-        self.floor.set_rot_rad(self.world_rotation_rad)
-        self.floor.rotate_deg(90, [0, 1, 0])
-        self.floor.set_pos([0, 0, 0])
+        self.floor.set_rot_deg([0, 90, 0])
         
         self.lillypad = LillyPad()
         self.lillypad.set_scale_single(.3)
-        self.lillypad.set_rot_rad(self.world_rotation_rad)
-        self.translate_object(self.lillypad, np.array([0, .15, -.5]))
+        self.lillypad.set_pos([0, .05, -.25])
         # self.lillypad_size = np.array([.3, 0, .3])
         self.lillypad_size = np.array([.25, 0, .1])
 
@@ -37,27 +37,15 @@ class Scene:
 
         self.tree = Tree()
         self.tree.set_scale_single(.25)
-        self.tree.set_rot_rad(self.world_rotation_rad)
-        self.translate_object(self.tree, np.array([0, .5, .2]))
-        
-        return [self.floor, self.lillypad, self.tree]
+        self.tree.set_pos([0, .4, .4])
+
+        self.container.children.append(self.floor)
+        self.container.children.append(self.lillypad)
+        self.container.children.append(self.tree)
     
-    def rotate_object_deg(self, obj: Object, angle_deg: np.ndarray) -> None:
-        angle_rad = np.deg2rad(angle_deg)
-        self.rotate_object_rad(obj, angle_rad)
-    
-    def rotate_object_rad(self, obj: Object, angle_rad: np.ndarray) -> None:
+    def rotate_scene(self, angle_deg: float) -> None:
         axis = self.world_up
-        position = np.array(obj.position) # clone because it will be modified
-        obj.translate(-position)
-        obj.rotate_rad(angle_rad, axis)
-        obj.translate(position)
-
-    def translate_object(self, obj: Object, delta: np.ndarray) -> None:
-        delta = [*delta, 1]
-        delta = (rotation_matrix_all(self.world_rotation_rad) @ delta)[:-1]
-        obj.translate(delta)
-
+        self.container.rotate_deg(angle_deg, axis)
+    
     def render_scene(self) -> None:
-        for obj in self.objects:
-            obj.render(np.identity(4, dtype=np.float32), self.renderer)
+        self.container.render(np.identity(4, dtype=np.float32), self.renderer)

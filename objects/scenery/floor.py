@@ -16,16 +16,9 @@ class Floor(Object):
         self.children.extend(self._make_land())
         self.children.extend(self._make_water_pond())
 
-    '''
-    TODO comentar isso direito depois
-    chão original: -.5 < x < .5 (como tá centralizado em (0,0) com largura 1 fica .5 prum lado e -.5 pro outro)
-    land_portion = L
-    land_normalized_pos = L - .5
-    '''
     def is_in_water(self, position: np.ndarray) -> bool:
-        position = np.array(position)
         local_position = self.world_to_local(position)
-        return self.land_portion - .5 < local_position[0] < .5 and -.5 < local_position[2] < .5
+        return 0 < local_position[0] < self.water_portion and -.5 < local_position[2] < .5
     
     def are_corners_in_water(self, center: np.ndarray, size: np.ndarray) -> bool:
         half_size = size / 2

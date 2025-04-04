@@ -23,6 +23,7 @@ class Input:
         self.rotation_speed = self.rotation_speed_fast if self.fast else self.rotation_speed_slow
         self.translation_speed = self.translation_speed_fast if self.fast else self.translation_speed_slow
 
+        self._handle_world_input(delta_time)
         self._handle_pad_input(delta_time)
         self._handle_frog_input(delta_time)
 
@@ -40,6 +41,19 @@ class Input:
         elif action == glfw.RELEASE:
             self.keys_pressed.discard(key)
 
+    def _handle_world_input(self, delta_time: float) -> None:
+        delta = 0
+        if glfw.KEY_LEFT in self.keys_pressed:
+            delta = self.rotation_speed * delta_time
+        if glfw.KEY_RIGHT in self.keys_pressed:
+            delta = -self.rotation_speed * delta_time
+
+        if delta != 0:
+            self.scene.rotate_scene(delta)
+            # for obj in self.scene.objects:
+                # self.scene.rotate_object_deg(obj, delta)
+                # obj.rotate_deg(delta, np.array([0, 1, 0]))
+
 
     def _handle_frog_input(self, delta_time: float) -> None:
         frog = self.scene.frog
@@ -53,9 +67,9 @@ class Input:
         
         rotation_delta = self.rotation_speed * delta_time
         if glfw.KEY_Q in self.keys_pressed:
-            self.scene.rotate_object_deg(lillypad, rotation_delta)
+            lillypad.rotate_deg(rotation_delta, [0, 1, 0], around_self=True)
         if glfw.KEY_E in self.keys_pressed:
-            self.scene.rotate_object_deg(lillypad, -rotation_delta)
+            lillypad.rotate_deg(-rotation_delta, [0, 1, 0], around_self=True)
 
         translation_direction = np.zeros(3)
         if glfw.KEY_W in self.keys_pressed:
@@ -72,7 +86,4 @@ class Input:
             translation_direction /= direction_magnitude
             translation_delta = translation_direction * self.translation_speed * delta_time
             if (self.scene.floor.are_corners_in_water(lillypad.position + translation_delta, self.scene.lillypad_size)):
-                self.scene.translate_object(lillypad, translation_delta)
-
-
-        
+                lillypad.translate(translation_delta)

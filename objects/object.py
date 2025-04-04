@@ -47,14 +47,21 @@ class Object:
     def set_rot_deg(self, rot: np.ndarray):
         self.set_rot_rad(np.deg2rad(rot))
 
-    def rotate_rad(self, radian: float, axis: np.ndarray):
-        rotation = np.array(axis, dtype=np.float32) * radian
+    def rotate_rad(self, radian: float, axis: np.ndarray, around_self: bool = False):
+        if around_self:
+            temp_position = np.array(self.position) # Clone because it will be modified
+            self.translate(-temp_position)
+
+        rotation = np.array(axis) * radian
         self.rotation += rotation
         rotation_mat = rotation_matrix_all(rotation)
         self.local_transformation_matrix = multiply_transformations([rotation_mat, self.local_transformation_matrix])
 
-    def rotate_deg(self, degree: float, axis: np.ndarray):
-        self.rotate_rad(np.deg2rad(degree), axis)
+        if around_self:
+            self.translate(temp_position)
+
+    def rotate_deg(self, degree: float, axis: np.ndarray, around_self: bool = False):
+        self.rotate_rad(np.deg2rad(degree), axis, around_self=around_self)
 
     def set_scale(self, scale: np.ndarray):
         self.scale = np.array(scale, dtype=np.float32)
