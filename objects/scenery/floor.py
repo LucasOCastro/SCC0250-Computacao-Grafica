@@ -1,12 +1,16 @@
 import numpy as np
 from objects.object import Object
-from objects.primitives import Sphere, Cube
+from objects.scenery.grasspatch import GrassPatch
+from objects.primitives import Cube
 
 LAND_SIZE = 0.7
 WATER_SIZE = 1 - LAND_SIZE 
+GRASS_PADDING = np.array([0.1, 0, 0.025])
+GRASS_DENSITY = 40
+GRASS_Y = 0.05
 DIRT_COLOR = (88/255, 57/255, 39/255, 1)
 WATER_COLOR = (40/255, 67/255, 160/255, 0.85)
-GRASS_COLOR = (17/255, 124/255, 19/255, 1)
+GRASS_COLOR = (0.537, 0.690, 0.290, 1.0)
 class Floor(Object):
     def __init__(self, height=0.5, land_portion=0.7):
         super().__init__()
@@ -15,6 +19,7 @@ class Floor(Object):
         self.water_portion = 1 - land_portion
         self.children.extend(self._make_land())
         self.children.extend(self._make_water_pond())
+        self.children.extend(self._make_grass_patch())
 
     def is_in_water(self, position: np.ndarray) -> bool:
         local_position = self.world_to_local(position)
@@ -48,3 +53,17 @@ class Floor(Object):
         dirt_bottom.set_scale((self.water_portion, self.height/10, 1))
         dirt_bottom.set_pos((self.water_portion/2,-self.height + self.height/20,0))
         return [water_block, dirt_bottom]
+    
+    def _make_grass_patch(self):
+        full_area_start = np.array([-self.land_portion, GRASS_Y, -.5])
+        full_area_end = np.array([0, GRASS_Y, .5])
+        full_area_size = full_area_end - full_area_start
+        area_padding = full_area_size * GRASS_PADDING
+
+        area_start = full_area_start + area_padding
+        area_end = full_area_end - area_padding
+        area_size = area_end - area_start
+
+        grass_patch = GrassPatch(area_size, GRASS_DENSITY, GRASS_DENSITY)
+        grass_patch.set_pos(area_start + area_size/2)
+        return [grass_patch]

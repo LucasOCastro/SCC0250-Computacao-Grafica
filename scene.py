@@ -37,7 +37,7 @@ class Scene:
 
         self.tree = Tree()
         self.tree.set_scale_single(.25)
-        self.tree.set_pos([0, .4, .4])
+        self.tree.set_pos([0, .3, .4])
 
         self.container.children.append(self.floor)
         self.container.children.append(self.lillypad)
