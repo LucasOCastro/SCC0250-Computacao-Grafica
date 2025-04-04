@@ -4,9 +4,14 @@ from scene import Scene
 import functools
 
 class Input:
-    def __init__(self, scene: Scene, rotation_speed: float = 100.0, translation_speed: float = 1.0) -> None:
-        self.rotation_speed = rotation_speed
-        self.translation_speed = translation_speed
+    def __init__(self, scene: Scene) -> None:
+        self.rotation_speed_slow = 100.0
+        self.rotation_speed_fast = 300.0
+        
+        self.translation_speed_slow = 0.5
+        self.translation_speed_fast = 1.0
+
+        self.fast = False
 
         self.scene = scene
         self.keys_pressed = set()
@@ -15,6 +20,9 @@ class Input:
         glfw.set_key_callback(glfw.get_current_context(), functools.partial(self._key_event))
 
     def update(self, delta_time: float) -> None:
+        self.rotation_speed = self.rotation_speed_fast if self.fast else self.rotation_speed_slow
+        self.translation_speed = self.translation_speed_fast if self.fast else self.translation_speed_slow
+
         self._handle_pad_input(delta_time)
         self._handle_frog_input(delta_time)
 
@@ -22,6 +30,9 @@ class Input:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
             return
+        
+        if key == glfw.KEY_LEFT_SHIFT and action == glfw.PRESS:
+            self.fast = not self.fast
         
         # Use a set because 'repeat' does not work for multiple key presses
         if action == glfw.PRESS:
