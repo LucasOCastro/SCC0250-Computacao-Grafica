@@ -15,12 +15,10 @@ class Input:
     def key_event(self, window, key, scancode, action, mods):
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
+            return
 
-        if 'frog' in self.scene.__dict__:
-            self.handle_frog_input(key, action)
-
-        if 'lillypad' in self.scene.__dict__:
-            self.handle_pad_input(key, action)
+        self.handle_frog_input(key, action)
+        self.handle_pad_input(key, action)
 
     def handle_frog_input(self, key: int, action: int) -> None:
         frog = self.scene.frog
@@ -33,10 +31,19 @@ class Input:
 
     def handle_pad_input(self, key: int, action: int) -> None:
         lillypad = self.scene.lillypad
-        if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.rotate_object_deg(lillypad, self.rotation_speed * self._delta_time)
 
+        if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
+            self.scene.translate_object(lillypad, np.array([0, 0, self._delta_time]))
+        if key == glfw.KEY_S and (action == glfw.PRESS or action == glfw.REPEAT):
+            self.scene.translate_object(lillypad, np.array([0, 0, -self._delta_time]))
+        if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
+            self.scene.translate_object(lillypad, np.array([-self._delta_time, 0, 0]))
         if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
+            self.scene.translate_object(lillypad, np.array([self._delta_time, 0, 0]))
+
+        if key == glfw.KEY_Q and (action == glfw.PRESS or action == glfw.REPEAT):
+            self.scene.rotate_object_deg(lillypad, self.rotation_speed * self._delta_time)
+        if key == glfw.KEY_E and (action == glfw.PRESS or action == glfw.REPEAT):
             self.scene.rotate_object_deg(lillypad, -self.rotation_speed * self._delta_time)
 
 
