@@ -7,9 +7,10 @@ from matrixmath import *
 
 
 def main():
+    window_dim = (1080, 900)
     glfw.init()
     glfw.window_hint(glfw.VISIBLE, glfw.FALSE);
-    window = glfw.create_window(720, 600, "Programa", None, None)
+    window = glfw.create_window(*window_dim, "Programa", None, None)
 
     if (window == None):
         print("Failed to create GLFW window")
