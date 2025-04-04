@@ -4,48 +4,56 @@ from scene import Scene
 import functools
 
 class Input:
-    def __init__(self, scene: Scene):
-        self._delta_time = 0
-        self.rotation_speed = 100
+    def __init__(self, scene: Scene, rotation_speed: float = 100.0, translation_speed: float = 1.0) -> None:
+        self.rotation_speed = rotation_speed
+        self.translation_speed = translation_speed
+
         self.scene = scene
+        self.keys_pressed = set()
 
         # Bind self to the callback
-        glfw.set_key_callback(glfw.get_current_context(), functools.partial(self.key_event))
+        glfw.set_key_callback(glfw.get_current_context(), functools.partial(self._key_event))
 
-    def key_event(self, window, key, scancode, action, mods):
+    def update(self, delta_time: float) -> None:
+        self._handle_pad_input(delta_time)
+        self._handle_frog_input(delta_time)
+
+    def _key_event(self, window, key, scancode, action, mods) -> None:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
             return
+        
+        # Use a set because 'repeat' does not work for multiple key presses
+        if action == glfw.PRESS:
+            self.keys_pressed.add(key)
+        elif action == glfw.RELEASE:
+            self.keys_pressed.discard(key)
 
-        self.handle_frog_input(key, action)
-        self.handle_pad_input(key, action)
 
-    def handle_frog_input(self, key: int, action: int) -> None:
+    def _handle_frog_input(self, delta_time: float) -> None:
         frog = self.scene.frog
-        if key == glfw.KEY_Z and (action == glfw.PRESS or action == glfw.REPEAT):
-            frog.animate(self._delta_time)
+        if glfw.KEY_Z in self.keys_pressed:
+            frog.animate(delta_time)
+        if glfw.KEY_X in self.keys_pressed:
+            frog.animate(-delta_time)
 
-        if key == glfw.KEY_X and (action == glfw.PRESS or action == glfw.REPEAT):
-            frog.animate(-self._delta_time)
-
-
-    def handle_pad_input(self, key: int, action: int) -> None:
+    def _handle_pad_input(self, delta_time: float) -> None:
         lillypad = self.scene.lillypad
 
-        if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.translate_object(lillypad, np.array([0, 0, self._delta_time]))
-        if key == glfw.KEY_S and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.translate_object(lillypad, np.array([0, 0, -self._delta_time]))
-        if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.translate_object(lillypad, np.array([-self._delta_time, 0, 0]))
-        if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.translate_object(lillypad, np.array([self._delta_time, 0, 0]))
+        trans = self.translation_speed * delta_time
+        if glfw.KEY_W in self.keys_pressed:
+            self.scene.translate_object(lillypad, np.array([0, 0, trans]))
+        if glfw.KEY_S in self.keys_pressed:
+            self.scene.translate_object(lillypad, np.array([0, 0, -trans]))
+        if glfw.KEY_A in self.keys_pressed:
+            self.scene.translate_object(lillypad, np.array([-trans, 0, 0]))
+        if glfw.KEY_D in self.keys_pressed:
+            self.scene.translate_object(lillypad, np.array([trans, 0, 0]))
 
-        if key == glfw.KEY_Q and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.rotate_object_deg(lillypad, self.rotation_speed * self._delta_time)
-        if key == glfw.KEY_E and (action == glfw.PRESS or action == glfw.REPEAT):
-            self.scene.rotate_object_deg(lillypad, -self.rotation_speed * self._delta_time)
+        rot = self.rotation_speed * delta_time
+        if glfw.KEY_Q in self.keys_pressed:
+            self.scene.rotate_object_deg(lillypad, rot)
+        if glfw.KEY_E in self.keys_pressed:
+            self.scene.rotate_object_deg(lillypad, -rot)
 
-
-    def set_delta_time(self, delta_time: float) -> None:
-        self._delta_time = delta_time
+        
