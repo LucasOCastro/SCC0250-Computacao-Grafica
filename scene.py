@@ -43,9 +43,11 @@ class Scene:
         self.container.children.append(self.lillypad)
         self.container.children.append(self.tree)
     
+    world_rot_rad = 0
     def rotate_scene(self, angle_deg: float) -> None:
-        axis = self.world_up
-        self.container.rotate_deg(angle_deg, axis)
+        self.world_rot_rad += np.deg2rad(angle_deg)
+        final_rot_rad = self.world_rotation_rad + np.array([0, self.world_rot_rad, 0])
+        self.container.set_rot_rad(final_rot_rad)
     
     def render_scene(self) -> None:
         self.container.render(np.identity(4, dtype=np.float32), self.renderer)
