@@ -40,7 +40,7 @@ class Input:
         elif key == glfw.KEY_LEFT_SHIFT:
             if action == glfw.PRESS:
                 self.fast = True
-            else:
+            elif action == glfw.RELEASE:
                 self.fast = False
         
         # Track held keys
