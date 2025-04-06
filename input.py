@@ -28,7 +28,7 @@ class Input:
         self._handle_world_input(delta_time)
         self._handle_pad_input(delta_time)
         self._handle_frog_input(delta_time)
-
+        self.scene.firefly.animate(delta_time)
     def _key_event(self, window, key, scancode, action, mods) -> None:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
