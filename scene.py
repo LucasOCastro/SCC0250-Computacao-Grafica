@@ -5,6 +5,7 @@ from objects.scenery.floor import Floor
 from objects.actors.frog import Frog
 from objects.actors.lillypad import LillyPad
 from objects.actors.tree import Tree
+from objects.actors.firefly import Firefly
 from matrixmath import *
 import numpy as np
 
@@ -42,7 +43,11 @@ class Scene:
         self.container.children.append(self.floor)
         self.container.children.append(self.lillypad)
         self.container.children.append(self.tree)
-    
+
+        self.firefly = Firefly(0.1)
+        #self.firefly.set_rot_deg((90, 90, 90))
+        self.container.children.append(self.firefly)
+
     world_rot_rad = 0
     def rotate_scene(self, angle_deg: float) -> None:
         self.world_rot_rad += np.deg2rad(angle_deg)
