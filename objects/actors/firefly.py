@@ -9,6 +9,7 @@ class Firefly(Object):
         super().__init__()
         self.size = size
         self.eye_size = size / 3
+        #montando os objetos
         self.body, self.yellow_bulb = self._make_body()
         self.eyes = self._make_eyes()
         self.eye_glows = self._make_eyes_glow()
@@ -27,7 +28,11 @@ class Firefly(Object):
             self.legs,
             self.wings
         ]
-        self.set_pos((0, 0.75, 0))
+        #variaveis referentes a animacao
+        self.is_moving = False
+        self.is_hovering = False
+        self.animation_progress = 0
+        self.hovering_progress = 0
         
     def _make_body(self):
         #bumbum do vagalume
@@ -108,3 +113,43 @@ class Firefly(Object):
             wing.set_pos((x, self.size/1.5, 0))
             wings.children.append(wing)
         return wings
+    
+    #funcao chamada a cada iteração do loop principal
+    def animate(self, delta_time):
+        if not self.is_moving and not self.is_hovering:
+            return
+        #flutua de cima para baixo
+        y_shift=0
+        if self.is_hovering:
+            y_shift = np.sin(self.hovering_progress*np.pi*2)*self.size/2
+            self.hovering_progress+=0.6*delta_time%1
+        hovering_array = np.array([0, y_shift, 0])
+        if self.is_moving:
+            #rotação em torno de um ponto
+            cur_index = int(len(self.movable_points)*self.animation_progress)
+            self.set_pos(self.movable_points[cur_index]+hovering_array)
+            self.set_rot_rad(self.rotations[cur_index])
+            self.animation_progress+= (delta_time*0.30)
+            self.animation_progress%=1
+        else:
+            cur_pos = self.position
+            cur_pos+= hovering_array/(self.size*1500)
+            self.set_pos(cur_pos)
+        
+    def move_around_point(self, point : np.ndarray, radius : float, num_of_steps=360):
+        #caso point seja uma lista 
+        point = np.array(point)
+        self.is_moving = True
+        self.movable_points = []
+        self.rotations = []
+        angle_step = np.pi*2/num_of_steps
+        #gera os pontos
+        for i in range(num_of_steps):
+            x, z = np.cos(angle_step*i)*radius, np.sin(angle_step*i)*radius
+            pos_shift = np.array([x, 0, z])
+            self.movable_points.append(point + pos_shift)
+            self.rotations.append(np.array([0, -angle_step*i + np.pi, 0]))            
+
+    def hover(self):
+        self.is_hovering = True
+        self.hovering_progress = 0
