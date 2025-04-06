@@ -3,11 +3,13 @@ from objects.object import Object
 from objects.primitives import Sphere, Cube
 
 class Frog(Object):
+    # Cores
     MAIN_COLOR = (.1, .9, .1, 1)
     SHADOW_COLOR = (0, .8, 0, 1)
     HIGHLIGHT_COLOR = (.4, 1, .4, 1)
     THROAT_COLOR = (.9, .5, .1, 1)
     
+    # Parâmetros de animação
     ANIMATION_MIN_HEAD_ROTATION = 0
     ANIMATION_MAX_HEAD_ROTATION = 60
     ANIMATION_MIN_HEAD_POSITION = np.array([0, 0.65, -0.5])
@@ -22,7 +24,6 @@ class Frog(Object):
         self.throat_animation_progress = 0
 
         self.body = self._make_body()
-
         self.head = self._make_head()
 
         self.right_back_leg = self._make_back_leg(1)
@@ -44,22 +45,27 @@ class Frog(Object):
         ]
 
     def animate(self, delta_time: float) -> None:
+        """Muda o progresso da animação de expansão do papo."""
+        # Atualiza o progresso da animação
         self.throat_animation_progress += delta_time
         self.throat_animation_progress = max(0, min(self.ANIMATION_LENGTH, self.throat_animation_progress))
         normalized_progress = self.throat_animation_progress / self.ANIMATION_LENGTH
 
-        # Cubic Ease-In-Out 
+        # Ease-in-out cúbico
         if normalized_progress < 0.5:
             normalized_progress = 4 * normalized_progress ** 3
         else:
             normalized_progress = 1 - (-2 * normalized_progress + 2) ** 3 / 2
 
+        # Inclina a cabeça para trás
         new_rot = self.ANIMATION_MIN_HEAD_ROTATION + normalized_progress * (self.ANIMATION_MAX_HEAD_ROTATION - self.ANIMATION_MIN_HEAD_ROTATION)
         self.head.set_rot_deg([new_rot, 0, 0])
 
+        # Desloca a cabeça para trás
         new_pos = self.ANIMATION_MIN_HEAD_POSITION + normalized_progress * (self.ANIMATION_MAX_HEAD_POSITION - self.ANIMATION_MIN_HEAD_POSITION)
         self.head.set_pos(new_pos)
 
+        # Escala o papo
         new_scale = self.ANIMATION_MIN_THROAT_SCALE + normalized_progress * (self.ANIMATION_MAX_THROAT_SCALE - self.ANIMATION_MIN_THROAT_SCALE)
         self.throat.set_scale_single(new_scale)
 

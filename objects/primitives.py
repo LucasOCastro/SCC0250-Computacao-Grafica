@@ -4,6 +4,7 @@ from OpenGL.GL import GL_TRIANGLE_STRIP
 from matrixmath import *
 
 class Cube(MeshObject):
+    # Índices de faces
     FRONT = 0
     BACK = 1
     LEFT = 2
@@ -15,17 +16,17 @@ class Cube(MeshObject):
         super().__init__()
 
         vertices = np.array([
-            # Front face
+            # Front
             [-1, -1,  1], [ 1, -1,  1], [ 1,  1,  1], [-1,  1,  1],
-            # Back face
+            # Back
             [-1, -1, -1], [-1,  1, -1], [ 1,  1, -1], [ 1, -1, -1],
-            # Left face
+            # Left
             [-1, -1, -1], [-1, -1,  1], [-1,  1,  1], [-1,  1, -1],
-            # Right face
+            # Right
             [ 1, -1, -1], [ 1,  1, -1], [ 1,  1,  1], [ 1, -1,  1],
-            # Top face
+            # Top
             [-1,  1, -1], [ 1,  1, -1], [ 1,  1,  1], [-1,  1,  1],
-            # Bottom face
+            # Bottom
             [-1, -1, -1], [-1, -1,  1], [ 1, -1,  1], [ 1, -1, -1]
         ], dtype=np.float32) * size / 2
 
@@ -74,12 +75,14 @@ class Sphere(MeshObject):
 
         vertices = np.zeros(((stacks + 1) * (slices + 1), 3), dtype=np.float32)
         normals = np.zeros(((stacks + 1) * (slices + 1), 3), dtype=np.float32)
-        indices = np.zeros(stacks * slices * 6, dtype=np.uint32)  # Each quad has 2 triangles = 6 indices
+        # Temos stack * slices quads. Cada quad tem 2 triangulos, e 6 indices representam esses 2 triangulos.
+        indices = np.zeros(stacks * slices * 6, dtype=np.uint32)  
 
-        # Generate vertices and normals
+        # Gera os vertices e normais
         index = 0
         for i in range(stacks + 1):
             for j in range(slices + 1):
+                # Coordenadas esfericas
                 theta = i * np.pi / stacks
                 phi = j * 2 * np.pi / slices
                 x = radius * np.sin(theta) * np.cos(phi)
@@ -90,19 +93,19 @@ class Sphere(MeshObject):
                 normals[index] = [x, y, z]
                 index += 1
 
-        # Generate indices
+        # Gera os indices
         index = 0
         for i in range(stacks):
             for j in range(slices):
                 first = i * (slices + 1) + j
                 second = first + slices + 1
 
-                # First triangle
+                # Triângulo 1
                 indices[index] = first
                 indices[index + 1] = second
                 indices[index + 2] = first + 1
 
-                # Second triangle
+                # Triângulo 2
                 indices[index + 3] = second
                 indices[index + 4] = second + 1
                 indices[index + 5] = first + 1
@@ -114,7 +117,6 @@ class Sphere(MeshObject):
 
 
 class Cylinder(MeshObject):
-
     def __init__(self, slices=36, radius=0.5, length=0.5, top_color=(1, 1, 1, 1), bottom_color=(1, 1, 1, 1), side_color=(1, 1, 1, 1)):
         super().__init__(render_mode=GL_TRIANGLE_STRIP)
         self.radius = radius
