@@ -43,7 +43,11 @@ class GrassPatch(Object):
         area_end = self.area_size / 2
 
         # Distância entre os cubos na grid
-        pos_step = self.area_size / np.array([self.count_per_line, 1, self.line_count])
+        pos_step = self.area_size / np.array([
+            max(1, self.count_per_line - 1),
+            1,
+            max(1, self.line_count - 1)
+        ])
 
         cubes = []
         for i in range(self.line_count):

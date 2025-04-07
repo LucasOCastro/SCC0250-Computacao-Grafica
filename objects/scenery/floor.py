@@ -5,7 +5,7 @@ from objects.primitives import Cube
 
 LAND_SIZE = 0.7
 WATER_SIZE = 1 - LAND_SIZE 
-GRASS_PADDING = np.array([0.1, 0, 0.025])
+GRASS_PADDING = np.array([0.08, 0, 0.03])
 GRASS_DENSITY = 40
 GRASS_Y = 0.05
 DIRT_COLOR = (88/255, 57/255, 39/255, 1)
@@ -55,13 +55,13 @@ class Floor(Object):
         return [water_block, dirt_bottom]
     
     def _make_grass_patch(self):
+        # Começa a graminha no começo da parte de terra
         full_area_start = np.array([-self.land_portion, GRASS_Y, -.5])
+        # Acaba a graminha no começo da parte de agua
         full_area_end = np.array([0, GRASS_Y, .5])
-        full_area_size = full_area_end - full_area_start
-        area_padding = full_area_size * GRASS_PADDING
 
-        area_start = full_area_start + area_padding
-        area_end = full_area_end - area_padding
+        area_start = full_area_start + GRASS_PADDING
+        area_end = full_area_end - GRASS_PADDING
         area_size = area_end - area_start
 
         grass_patch = GrassPatch(area_size, GRASS_DENSITY, GRASS_DENSITY)
