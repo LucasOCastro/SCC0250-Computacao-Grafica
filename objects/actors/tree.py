@@ -27,11 +27,14 @@ class Tree(Object):
         return trunk
     
     def _make_leaf_sphere(self, offset, radius):
-        """Cria uma folha esférica de cor aleatória com um offset"""
-        color = Tree.LEAF_COLORS[np.random.randint(0, len(self.LEAF_COLORS))]
+        """Cria uma folha esférica de cor aleatória com um offset em relação ao topo do tronco"""
+        colort_t = np.random.uniform(0, 1) * (len(self.LEAF_COLORS) - 1)
+        c1 = np.array(self.LEAF_COLORS[int(colort_t)])
+        c2 = np.array(self.LEAF_COLORS[int(np.ceil(colort_t))]) if colort_t < len(self.LEAF_COLORS) - 1 else c1
+        color = (1 - colort_t) * c1 + colort_t * c2
         sphere = Sphere(color=color, radius=radius)
 
-        origin = np.array([0.0, self.trunk_height / 2, 0.0])        
+        origin = np.array([0.0, self.trunk_height / 2, 0.0])
         sphere.set_pos(origin + offset)
 
         return sphere
