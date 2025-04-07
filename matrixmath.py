@@ -67,3 +67,7 @@ def translation_matrix(position: np.ndarray) -> np.ndarray:
         [0, 0, 1, position[2]],
         [0, 0, 0, 1]
     ], dtype=np.float32)
+
+def transform_vector(vector: np.ndarray, matrix: np.ndarray) -> np.ndarray:
+    """Aplica uma matriz de transformação 4x4 em um vetor 3D."""
+    return (matrix @ np.array([*vector, 1]))[:-1]

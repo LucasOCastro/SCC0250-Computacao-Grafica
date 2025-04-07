@@ -121,7 +121,7 @@ class Input:
         if (direction_magnitude := np.linalg.norm(translation_direction)) > 0:
             # Converte direção para coordenadas do mundo
             inverse_transform = np.linalg.inv(self.scene.container.local_transformation_matrix)
-            translation_direction = (inverse_transform @ [*translation_direction, 1])[:-1] # Adiciona coord homogenea e depois tira
+            translation_direction = transform_vector(translation_direction, inverse_transform)
             translation_direction[1] = 0 # Ignora movimento vertical
             translation_direction /= direction_magnitude # Normaliza
 

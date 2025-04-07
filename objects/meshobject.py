@@ -2,6 +2,7 @@ from objects.object import Object
 import numpy as np
 from OpenGL.GL import *
 from renderer import Renderer
+from matrixmath import *
 
 
 class MeshObject(Object):
@@ -115,14 +116,12 @@ class MeshObject(Object):
         for mesh in meshes:
             # Aplica transformação nos vértices
             transform = mesh.local_transformation_matrix
-            transformed_positions = [transform @ np.array([*vp, 1]) for vp in mesh.vertex_positions] # Adiciona coord homegenea
-            transformed_positions = [vp[:-1] for vp in transformed_positions] # Remove coord homegenea
+            transformed_positions = [transform_vector(vp, transform) for vp in mesh.vertex_positions]
 
             # Aplica transformação nos vetores normais (sem translação)
             normal_transform = np.array(mesh.local_transformation_matrix)
             normal_transform[3] = np.array([0, 0, 0, 1])
-            transformed_normals = [normal_transform @ np.array([*n, 1]) for n in mesh.normals]
-            transformed_normals = [n[:3] for n in transformed_normals]
+            transformed_normals = [transform_vector(n, normal_transform) for n in mesh.normals]
             
             vertex_positions.extend(transformed_positions)
             normals.extend(transformed_normals)
