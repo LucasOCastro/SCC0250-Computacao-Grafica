@@ -4,10 +4,14 @@ from objects.primitives import Sphere, Cube
 
 class Frog(Object):
     # Cores
-    MAIN_COLOR = (.1, .9, .1, 1)
-    SHADOW_COLOR = (0, .8, 0, 1)
-    HIGHLIGHT_COLOR = (.4, 1, .4, 1)
+    MAIN_COLOR = (0.447, 0.643, 0.192, 1.0)
+    HIGHLIGHT_COLOR = (0.6, 0.8, 0.25, 1.0)
+    SHADOW_COLOR = (0.325, 0.447, 0.129, 1.0)
     THROAT_COLOR = (.9, .5, .1, 1)
+
+    # MAIN_COLOR = (0.3882, 0.5294, 0.2118, 1.0)
+    # HIGHLIGHT_COLOR = (0.4706, 0.6235, 0.2471, 1.0)
+    # SHADOW_COLOR = (0.298, 0.384, 0.141, 1.0)
     
     # Parâmetros de animação
     ANIMATION_MIN_HEAD_ROTATION = 0
@@ -131,7 +135,6 @@ class Frog(Object):
         head = Cube(color=self.MAIN_COLOR)
         head.set_face_color(Cube.BOTTOM, self.SHADOW_COLOR)
         head.set_face_color(Cube.TOP, self.HIGHLIGHT_COLOR)
-        head.set_face_color(Cube.FRONT, self.HIGHLIGHT_COLOR)
         head.set_face_color(Cube.RIGHT, self.HIGHLIGHT_COLOR)
         head.set_face_color(Cube.LEFT, self.HIGHLIGHT_COLOR)
         head.set_scale([0.8, 0.6, 0.45])

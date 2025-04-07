@@ -31,7 +31,7 @@ class Scene:
         
         self.lillypad = LillyPad()
         self.lillypad.set_scale_single(.3)
-        self.lillypad.set_pos([0, .05, -.25])
+        self.lillypad.set_pos([0, .055, -.25])
         # O tamanho da lillypad para o cálculo de colisão com a borda da água
         self.lillypad_size = np.array([.25, 0, .1])
         self.container.children.append(self.lillypad)
