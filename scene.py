@@ -48,8 +48,7 @@ class Scene:
         self.container.children.append(self.tree)
 
         self.firefly = Firefly(0.05)
-        self.firefly.move_around_point(tree_pos, .25, 360)
-        self.firefly.hover()
+        self.firefly.prepare_move_around_point(tree_pos, .25, 360)
         self.container.children.append(self.firefly)
 
     def rotate_scene(self, angle_deg: float) -> None:

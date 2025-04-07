@@ -16,29 +16,41 @@ class Input:
         self.scene = scene
 
         # Se self.fast for True, as velocidades de movimento e rotação serão aumentadas
-        self.rotation_speed_slow = 100.0
-        self.rotation_speed_fast = 300.0
-        self.translation_speed_slow = 0.5
-        self.translation_speed_fast = 1.0
-        self.world_rotation_speed = 100        
         self.fast = False
+
+        self.pad_rotation_speed_slow = 100.0
+        self.pad_rotation_speed_fast = 300.0
+        self.pad_translation_speed_slow = 0.5
+        self.pad_translation_speed_fast = 1.0
+
+        self.firefly_rotation_speed_slow = 0.2
+        self.firefly_rotation_speed_fast = 0.45
+
+        self.world_rotation_speed = 100        
 
         # Arnazena teclas pressionadas
         self.keys_pressed = set()
+
+        self.animation_mode = False
 
         # Configura callback para eventos de teclado
         glfw.set_key_callback(glfw.get_current_context(), functools.partial(self._key_event))
 
     def update(self, delta_time: float) -> None:
         # Atualiza velocidades de movimento e rotação de acordo com o estado de self.fast
-        self.rotation_speed = self.rotation_speed_fast if self.fast else self.rotation_speed_slow
-        self.translation_speed = self.translation_speed_fast if self.fast else self.translation_speed_slow
+        self.pad_rotation_speed = self.pad_rotation_speed_fast if self.fast else self.pad_rotation_speed_slow
+        self.pad_translation_speed = self.pad_translation_speed_fast if self.fast else self.pad_translation_speed_slow
+        self.firefly_rotation_speed = self.firefly_rotation_speed_fast if self.fast else self.firefly_rotation_speed_slow
 
-        # Aplica movimentação
+        if self.animation_mode:
+            pass
+        else:
+            self._handle_pad_input(delta_time)
+            self._handle_frog_input(delta_time)
+            self._handle_firefly_input(delta_time)
+        
         self._handle_world_input(delta_time)
-        self._handle_pad_input(delta_time)
-        self._handle_frog_input(delta_time)
-        self.scene.firefly.animate(delta_time)
+        self.scene.firefly.update()
         
     def _key_event(self, window, key, scancode, action, mods) -> None:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
@@ -54,10 +66,13 @@ class Input:
             elif action == glfw.RELEASE:
                 self.fast = False
 
+        # Controle do modo de animação (SPACE para toggle)
+        if key == glfw.KEY_SPACE and action == glfw.PRESS:
+            self.animation_mode = not self.animation_mode
+
         # Controle da visualização de malha (P para toggle)
         if key == glfw.KEY_P and action == glfw.PRESS:
             self.scene.renderer.toggle_wireframe()
-
         
         # Rastreamento de teclas pressionadas
         if action == glfw.PRESS:
@@ -86,7 +101,7 @@ class Input:
         lillypad = self.scene.lillypad
         
         # Rotação
-        rotation_delta = self.rotation_speed * delta_time
+        rotation_delta = self.pad_rotation_speed * delta_time
         if glfw.KEY_Q in self.keys_pressed:
             lillypad.rotate_deg(rotation_delta, [0, 1, 0], around_self=True)
         if glfw.KEY_E in self.keys_pressed:
@@ -111,6 +126,15 @@ class Input:
             translation_direction /= direction_magnitude # Normaliza
 
             # Aplica movimento se não vai sair da água
-            translation_delta = translation_direction * self.translation_speed * delta_time
+            translation_delta = translation_direction * self.pad_translation_speed * delta_time
             if self.scene.floor.are_corners_in_water(lillypad.position + translation_delta, self.scene.lillypad_size):
                 lillypad.translate(translation_delta)
+
+    def _handle_firefly_input(self, delta_time: float) -> None:
+        """Controla movimentação do vagalume (UP/DOWN para girar ao redor)"""
+        firefly = self.scene.firefly
+        rotation_delta = self.firefly_rotation_speed * delta_time
+        if glfw.KEY_UP in self.keys_pressed:
+            firefly.move_around_point(rotation_delta)
+        if glfw.KEY_DOWN in self.keys_pressed:
+            firefly.move_around_point(-rotation_delta)
