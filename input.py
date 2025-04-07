@@ -53,6 +53,11 @@ class Input:
                 self.fast = True
             elif action == glfw.RELEASE:
                 self.fast = False
+
+        # Controle da visualização de malha (P para toggle)
+        if key == glfw.KEY_P and action == glfw.PRESS:
+            self.scene.renderer.toggle_wireframe()
+
         
         # Rastreamento de teclas pressionadas
         if action == glfw.PRESS:

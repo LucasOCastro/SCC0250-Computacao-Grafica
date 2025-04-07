@@ -63,3 +63,9 @@ class Renderer:
         value = value.reshape(1,16)
         
         glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_TRUE, value)
+
+    def toggle_wireframe(self) -> None:
+        if glGetIntegerv(GL_POLYGON_MODE)[0] == GL_FILL:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        else:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
