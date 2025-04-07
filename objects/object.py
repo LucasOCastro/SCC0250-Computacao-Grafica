@@ -86,9 +86,11 @@ class Object:
 
     def world_to_local(self, point: np.ndarray) -> np.ndarray:
         """Converte ponto do mundo para o espaço local do objeto"""
-        if len(point) == 3:
-            point = np.append(point, 1)
-        return np.dot(np.linalg.inv(self.local_transformation_matrix), point)[:-1]
+        return transform_vector(point, np.linalg.inv(self.local_transformation_matrix))
+    
+    def local_to_world(self, point: np.ndarray) -> np.ndarray:
+        """Converte ponto do espaço local do objeto para o mundo"""
+        return transform_vector(point, self.local_transformation_matrix)
 
     def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
         """Renderiza o objeto e seus filhos com base na matriz do pai"""
