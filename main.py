@@ -1,3 +1,7 @@
+# Alunos
+# Gustavo Bhering Grande - 12542780
+# Lucas Oliveira Castro - 13695059
+
 import glfw
 from OpenGL.GL import *
 from input import Input
