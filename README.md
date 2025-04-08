@@ -1,3 +1,10 @@
+# Alunos
+
+ Gustavo Bhering Grande - 12542780
+ 
+ Lucas Oliveira Castro - 13695059
+
+
 # Para executar:
 
 python main.py
