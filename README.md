@@ -1,4 +1,9 @@
+# Computação Gráfica - ICMC USP - 2025/1
+
+![python3 10_1ovh9u4GNn-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/844e6592-5c5e-4c6a-a713-6855da63b16b)
+
 # Alunos
+
 
  Gustavo Bhering Grande - 12542780
  
