@@ -1,5 +1,6 @@
 from window import Window
 from input import Input
+from sceneinput import SceneInput
 from renderer import Renderer
 from scene import Scene
 import numpy as np
@@ -22,12 +23,16 @@ def main():
 
     # Cria o input para manipular a cena
     input = Input(scene)
+    scene_input = SceneInput(scene, renderer, input)
+
 
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time
 
+        # Atualiza inputs
         input.update(delta_time)
+        scene_input.update(delta_time)
         
         scene.render_scene()
         window.post_render()
