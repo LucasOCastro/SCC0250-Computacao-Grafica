@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 import numpy as np
+from camera import Camera
 
 class Renderer:
     """
@@ -18,6 +19,11 @@ class Renderer:
         # Habilita blending para transparência
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Habilita textures
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_LINE_SMOOTH)
+        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
 
         # Cria o programa
         self.program = glCreateProgram()
@@ -57,6 +63,15 @@ class Renderer:
         # Anexa o shader ao programa principal
         glAttachShader(self.program, shader)
         return shader
+    
+    def set_camera(self, camera: Camera) -> None:
+        view = camera.get_view_matrix()
+        loc_view = glGetUniformLocation(self.program, "view")
+        glUniformMatrix4fv(loc_view, 1, GL_TRUE, view)
+
+        projection = camera.get_projection_matrix()
+        loc_projection = glGetUniformLocation(self.program, "projection")
+        glUniformMatrix4fv(loc_projection, 1, GL_TRUE, projection)
 
     def set_mat4(self, name: str, value: np.ndarray) -> None:
         # Achata a matriz para formato OpenGL
