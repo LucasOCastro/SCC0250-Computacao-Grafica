@@ -9,11 +9,9 @@ from matrixmath import *
 import numpy as np
 
 class Scene:
-    def __init__(self, renderer: Renderer, world_rotation_rad: np.ndarray = np.array([0.0, 0.0, 0.0])):
+    def __init__(self, renderer: Renderer):
         self.renderer = renderer
 
-        # Inclinação inicial da cena inteira para ficar mais interessante
-        self.world_rotation_rad = np.array(world_rotation_rad, dtype=np.float32)
         # Ângulo atual de rotação da cena inteira no eixo y
         self.world_rot_rad = 0
 
@@ -22,7 +20,8 @@ class Scene:
     def gen_objects(self):
         # Container principal que segura todos os objetos da cena
         self.container = Object()
-        self.container.set_rot_rad(self.world_rotation_rad)
+        self.container.set_scale_single(10)
+        self.container.set_pos([0, 0, -20])
 
         self.floor = Floor()
         self.floor.set_scale([1.5, 1, 1.5])

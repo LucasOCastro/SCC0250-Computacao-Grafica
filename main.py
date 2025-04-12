@@ -2,6 +2,7 @@ from window import Window
 from input import Input
 from sceneinput import SceneInput
 from renderer import Renderer
+from camera import Camera
 from scene import Scene
 import numpy as np
 
@@ -15,14 +16,13 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
+    camera = Camera(window, 0.1, 100, 45)
 
-    # Cria a cena com todos os objetos, inclinada
-    world_rotation_deg = np.array([-30, 0, 0], dtype=np.float32)
-    world_rotation_rad = np.deg2rad(world_rotation_deg)
-    scene = Scene(renderer, world_rotation_rad=world_rotation_rad)
+    # Cria a cena com todos os objetos
+    scene = Scene(renderer)
 
     # Cria o input para manipular a cena
-    input = Input(scene)
+    input = Input(window)
     scene_input = SceneInput(scene, renderer, input)
 
 
@@ -31,9 +31,11 @@ def main():
         delta_time = window.delta_time
 
         # Atualiza inputs
-        input.update(delta_time)
+        camera.update(input, delta_time)
         scene_input.update(delta_time)
+        input.update()
         
+        renderer.set_camera(camera)
         scene.render_scene()
         window.post_render()
 
