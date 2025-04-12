@@ -19,7 +19,7 @@ class Input:
         self.key_press_callbacks = {}
 
         # Inicializa valores de mouse
-        self.mouse_pos = np.array([0.0, 0.0], dtype=np.float32)
+        self.mouse_pos = np.array(glfw.get_cursor_pos(window.window))
         self.mouse_delta = np.array([0.0, 0.0], dtype=np.float32)
         self.scroll_delta = np.array([0.0, 0.0], dtype=np.float32)
 
