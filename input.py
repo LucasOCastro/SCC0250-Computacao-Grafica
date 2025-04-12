@@ -1,6 +1,6 @@
 import glfw
 import numpy as np
-from scene import Scene
+from window import Window
 import functools
 from matrixmath import *
 
@@ -13,34 +13,94 @@ class Input:
     - Movimentação de objetos na cena
     """
     
-    def __init__(self) -> None:
+    def __init__(self, window: Window) -> None:
         # Arnazena teclas pressionadas
         self.held_keys = set()
         self.key_press_callbacks = {}
 
-        # Configura callback para eventos de teclado
-        glfw.set_key_callback(glfw.get_current_context(), functools.partial(self._key_event))    
-        
+        # Inicializa valores de mouse
+        self.mouse_pos = np.array([0.0, 0.0], dtype=np.float32)
+        self.mouse_delta = np.array([0.0, 0.0], dtype=np.float32)
+        self.scroll_delta = np.array([0.0, 0.0], dtype=np.float32)
+
+        # Configura callbacks
+        glfw.set_key_callback(glfw.get_current_context(), functools.partial(self._key_event))
+        glfw.set_cursor_pos_callback(window.window, functools.partial(self._mouse_event))
+        glfw.set_scroll_callback(window.window, functools.partial(self._scroll_event))
+
+    def update(self) -> None:
+        self.mouse_delta = np.array([0.0, 0.0], dtype=np.float32)
+        self.scroll_delta = np.array([0.0, 0.0], dtype=np.float32)
+
+    def register_key_callback(self, key: int, callback: callable) -> None:
+        if key in self.key_press_callbacks:
+            self.key_press_callbacks[key].append(callback)
+        else:
+            self.key_press_callbacks[key] = [callback]
+
+    def get_1d_axis(self, key_pos: int, key_neg: int) -> float:
+        if key_pos in self.held_keys:
+            return 1.0
+        if key_neg in self.held_keys:
+            return -1.0
+        return 0.0
+
+    def get_2d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int) -> np.array:
+        axis = np.array([0.0, 0.0], dtype=np.float32)
+        if pos_x in self.held_keys:
+            axis[0] = 1.0
+        if neg_x in self.held_keys:
+            axis[0] = -1.0
+        if pos_y in self.held_keys:
+            axis[1] = 1.0
+        if neg_y in self.held_keys:
+            axis[1] = -1.0
+        norm = np.linalg.norm(axis)
+        if norm != 0.0:
+            axis /= norm
+        return axis
+    
+    def get_3d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int, pos_z: int, neg_z: int) -> np.array:
+        axis = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+        if pos_x in self.held_keys:
+            axis[0] = 1.0
+        if neg_x in self.held_keys:
+            axis[0] = -1.0
+        if pos_y in self.held_keys:
+            axis[1] = 1.0
+        if neg_y in self.held_keys:
+            axis[1] = -1.0
+        if pos_z in self.held_keys:
+            axis[2] = 1.0
+        if neg_z in self.held_keys:
+            axis[2] = -1.0
+
+        norm = np.linalg.norm(axis)
+        if norm != 0.0:
+            axis /= norm
+        return axis
+    
     def _key_event(self, window, key, scancode, action, mods) -> None:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
             return
         
-        # Controle da visualização de malha (P para toggle)
-        if key == glfw.KEY_P and action == glfw.PRESS:
-            self.scene.renderer.toggle_wireframe()
-        
         # Rastreamento de teclas pressionadas
         if action == glfw.PRESS:
             self.held_keys.add(key)
-            if key in self.key_press_callbacks:
-                for callback in self.key_press_callbacks[key]:
-                    callback()
+            self._fire_callbacks(key)
         elif action == glfw.RELEASE:
             self.held_keys.discard(key)
 
-    def register_callback(self, key: int, callback: callable) -> None:
+    def _mouse_event(self, window, xpos, ypos):
+        mouse_pos = np.array([xpos, ypos], dtype=np.float32)
+        self.mouse_delta = mouse_pos - self.mouse_pos
+        self.mouse_pos = mouse_pos
+
+    def _scroll_event(self, window, xoffset, yoffset):
+        self.scroll_delta = np.array([xoffset, yoffset], dtype=np.float32)
+    
+    def _fire_callbacks(self, key: int) -> None:
         if key in self.key_press_callbacks:
-            self.key_press_callbacks[key].append(callback)
-        else:
-            self.key_press_callbacks[key] = [callback]
+            for callback in self.key_press_callbacks[key]:
+                callback()
