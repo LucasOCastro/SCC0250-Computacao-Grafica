@@ -65,6 +65,10 @@ class Renderer:
         return shader
     
     def set_camera(self, camera: Camera) -> None:
+        """
+        Define a matriz de visualização e a matriz de projeção a partir de uma câmera.
+        """
+        
         view = camera.get_view_matrix()
         loc_view = glGetUniformLocation(self.program, "view")
         glUniformMatrix4fv(loc_view, 1, GL_TRUE, view)
@@ -76,7 +80,6 @@ class Renderer:
     def set_mat4(self, name: str, value: np.ndarray) -> None:
         # Achata a matriz para formato OpenGL
         value = value.reshape(1,16)
-        
         glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_TRUE, value)
 
     def toggle_wireframe(self) -> None:

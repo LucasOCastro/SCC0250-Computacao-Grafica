@@ -2,6 +2,9 @@ import glfw
 from OpenGL.GL import *
 
 class Window:
+    """
+    Classe que representa e configura a janela do glfw.
+    """
     def __init__(self, width: int, height: int, title: str, bg_color: tuple=(1.0, 1.0, 1.0, 1.0)):
         self.width = width
         self.height = height
@@ -33,6 +36,9 @@ class Window:
         return glfw.window_should_close(self.window)
 
     def pre_render(self) -> None:
+        """ 
+        Prepara a janela para renderizar, atualizando o delta_time e limpando a tela com a cor de fundo.
+        """
         current_time = glfw.get_time()
         self.delta_time = current_time - self._last_time
         self._last_time = current_time
@@ -41,6 +47,9 @@ class Window:
         glClearColor(*self.bg_color)
 
     def post_render(self) -> None:
+        """ 
+        Finaliza a renderização da janela, trocando os buffers e processando os eventos.
+        """
         glfw.swap_buffers(self.window)
         glfw.poll_events()
 

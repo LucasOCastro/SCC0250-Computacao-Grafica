@@ -6,6 +6,9 @@ import glfw
 from matrixmath import *
 
 class SceneInput:
+    """
+    Classe para manipular a cena de acordo com o input do usuário.
+    """
     def __init__(self, scene: Scene, renderer: Renderer, input: Input):
         self.scene = scene
         self.input = input

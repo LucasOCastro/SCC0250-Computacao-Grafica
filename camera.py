@@ -6,6 +6,9 @@ from input import Input
 from matrixmath import *
 
 class Camera:
+    """
+    Classe que representa uma camera 3D.
+    """
     def __init__(self, window: Window, near: float, far: float, fov: float):
         self.window = window
         self.near = near
@@ -42,6 +45,9 @@ class Camera:
         return np.array(projection)
     
     def set_yaw_pitch(self, yaw: float, pitch: float) -> None:
+        """
+        Define o angulo de yaw e pitch da camera, atualizando a matriz de rotacao e o vetor forward.
+        """
         yaw = self._clamp_to_range(yaw, self.yaw_range)
         pitch = self._clamp_to_range(pitch, self.pitch_range)
 

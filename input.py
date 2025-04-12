@@ -6,11 +6,7 @@ from matrixmath import *
 
 class Input:
     """
-    Classe para gerenciamento de entrada e controle da cena.
-    Responsável por:
-    - Captura de eventos do teclado
-    - Controle de velocidade (normal/rápida)
-    - Movimentação de objetos na cena
+    Classe para gerenciamento de entrada.
     """
     
     def __init__(self, window: Window) -> None:
@@ -42,47 +38,57 @@ class Input:
         return key in self.held_keys
 
     def get_1d_axis(self, key_pos: int, key_neg: int) -> float:
+        """
+        Se a tecla positiva estiver pressionada, retorna 1.0. 
+        Se a tecla negativa estiver pressionada, retorna -1.0.
+        Caso contrário, retorna 0.0.
+        """
+        axis = 0.0
         if self.is_key_held(key_pos):
-            return 1.0
+            axis += 1.0
         if self.is_key_held(key_neg):
-            return -1.0
-        return 0.0
+            axis -= 1.0
+        return axis
 
     def get_2d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int) -> np.array:
-        axis = np.array([0.0, 0.0], dtype=np.float32)
-        if self.is_key_held(pos_x):
-            axis[0] = 1.0
-        if self.is_key_held(neg_x):
-            axis[0] = -1.0
-        if self.is_key_held(pos_y):
-            axis[1] = 1.0
-        if self.is_key_held(neg_y):
-            axis[1] = -1.0
+        """
+        Retorna um vetor 2D com a direção de input do usuário.
+        Se a tecla positiva de X estiver pressionada, o valor de X será 1.0.
+        Se a tecla negativa de X estiver pressionada, o valor de X será -1.0.
+        Mesma coisa para Y.
+        O vetor resultante é normalizado.
+        """
+        axis = np.array([
+            self.get_1d_axis(pos_x, neg_x),
+            self.get_1d_axis(pos_y, neg_y)
+        ])
+
         norm = np.linalg.norm(axis)
         if norm != 0.0:
             axis /= norm
         return axis
     
     def get_3d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int, pos_z: int, neg_z: int) -> np.array:
-        axis = np.array([0.0, 0.0, 0.0], dtype=np.float32)
-        if self.is_key_held(pos_x):
-            axis[0] = 1.0
-        if self.is_key_held(neg_x):
-            axis[0] = -1.0
-        if self.is_key_held(pos_y):
-            axis[1] = 1.0
-        if self.is_key_held(neg_y):
-            axis[1] = -1.0
-        if self.is_key_held(pos_z):
-            axis[2] = 1.0
-        if self.is_key_held(neg_z):
-            axis[2] = -1.0
+        """
+        Retorna um vetor 3D com a direção de input do usuário.
+        Se a tecla positiva de X estiver pressionada, o valor de X será 1.0.
+        Se a tecla negativa de X estiver pressionada, o valor de X será -1.0.
+        Mesma coisa para Y e Z.
+        O vetor resultante é normalizado.
+        """
+        axis = np.array([
+            self.get_1d_axis(pos_x, neg_x),
+            self.get_1d_axis(pos_y, neg_y),
+            self.get_1d_axis(pos_z, neg_z)
+        ])
 
         norm = np.linalg.norm(axis)
         if norm != 0.0:
             axis /= norm
         return axis
     
+    ###### Callbacks ######
+
     def _key_event(self, window, key, scancode, action, mods) -> None:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
