@@ -86,7 +86,7 @@ class MeshObject(Object):
 
         # Atualiza matriz de transformação no shader
         world_mat = np.dot(parent_transformation_matrix, self.local_transformation_matrix)
-        renderer.set_mat4('mat_transformation', world_mat)
+        renderer.set_mat4('model', world_mat)
 
         # Desenha a mesh
         glBindVertexArray(self.vao)
