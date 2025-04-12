@@ -37,23 +37,26 @@ class Input:
             self.key_press_callbacks[key].append(callback)
         else:
             self.key_press_callbacks[key] = [callback]
+    
+    def is_key_held(self, key: int) -> bool:
+        return key in self.held_keys
 
     def get_1d_axis(self, key_pos: int, key_neg: int) -> float:
-        if key_pos in self.held_keys:
+        if self.is_key_held(key_pos):
             return 1.0
-        if key_neg in self.held_keys:
+        if self.is_key_held(key_neg):
             return -1.0
         return 0.0
 
     def get_2d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int) -> np.array:
         axis = np.array([0.0, 0.0], dtype=np.float32)
-        if pos_x in self.held_keys:
+        if self.is_key_held(pos_x):
             axis[0] = 1.0
-        if neg_x in self.held_keys:
+        if self.is_key_held(neg_x):
             axis[0] = -1.0
-        if pos_y in self.held_keys:
+        if self.is_key_held(pos_y):
             axis[1] = 1.0
-        if neg_y in self.held_keys:
+        if self.is_key_held(neg_y):
             axis[1] = -1.0
         norm = np.linalg.norm(axis)
         if norm != 0.0:
@@ -62,17 +65,17 @@ class Input:
     
     def get_3d_axis(self, pos_x: int, neg_x: int, pos_y: int, neg_y: int, pos_z: int, neg_z: int) -> np.array:
         axis = np.array([0.0, 0.0, 0.0], dtype=np.float32)
-        if pos_x in self.held_keys:
+        if self.is_key_held(pos_x):
             axis[0] = 1.0
-        if neg_x in self.held_keys:
+        if self.is_key_held(neg_x):
             axis[0] = -1.0
-        if pos_y in self.held_keys:
+        if self.is_key_held(pos_y):
             axis[1] = 1.0
-        if neg_y in self.held_keys:
+        if self.is_key_held(neg_y):
             axis[1] = -1.0
-        if pos_z in self.held_keys:
+        if self.is_key_held(pos_z):
             axis[2] = 1.0
-        if neg_z in self.held_keys:
+        if self.is_key_held(neg_z):
             axis[2] = -1.0
 
         norm = np.linalg.norm(axis)

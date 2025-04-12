@@ -13,6 +13,7 @@ class Camera:
         self.fov = fov
         
         self.move_speed = 5
+        self.move_speed_fast = 10
         self.sensitivity = 4
         self.zoom_speed = 1
         
@@ -56,16 +57,19 @@ class Camera:
 
     def update(self, input: Input, delta_time: float) -> None:
         move_axis = input.get_3d_axis(glfw.KEY_D, glfw.KEY_A, glfw.KEY_SPACE, glfw.KEY_LEFT_CONTROL, glfw.KEY_S, glfw.KEY_W)
-        self._update_movement(move_axis, delta_time)
+        fast = input.is_key_held(glfw.KEY_LEFT_SHIFT)
+        self._update_movement(move_axis, delta_time, fast)
         self._update_rotation(input.mouse_delta, delta_time)
         self._update_zoom(input.scroll_delta, delta_time)
 
-    def _update_movement(self, move_input: np.array, delta_time: float) -> None:
+    def _update_movement(self, move_input: np.array, delta_time: float, fast: bool = False) -> None:
         if move_input[0] == 0.0 and move_input[1] == 0.0 and move_input[2] == 0.0:
             return
+        
+        move_speed = self.move_speed_fast if fast else self.move_speed
 
         movement_direction = transform_vector(move_input, self.rotation_matrix)
-        movement_delta = movement_direction * self.move_speed * delta_time
+        movement_delta = movement_direction * move_speed * delta_time
         self.position += movement_delta
 
     def _update_rotation(self, mouse_delta: np.array, delta_time: float) -> None:
