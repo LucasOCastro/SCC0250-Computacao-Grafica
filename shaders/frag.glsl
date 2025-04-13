@@ -1,6 +1,12 @@
 #version 400
-varying vec4 v_color;
+
+// Recebe do programa
+uniform sampler2D tex;
+
+// Recebe da vertex shader
+in vec2 v_uv;
 
 void main(){
-    gl_FragColor = v_color;
+    vec4 texture = texture2D(tex, v_uv);
+    gl_FragColor = texture;
 }
