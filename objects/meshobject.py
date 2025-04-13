@@ -19,45 +19,62 @@ class MeshObject(Object):
         self._load_model(model_path)
         self._load_texture(texture_path)
 
+        error = glGetError()
+        if error != GL_NO_ERROR:
+            print(error)
+            raise Exception("OpenGL error when creating object")
+
     def _load_model(self, model_path: str) -> None:
         raw_vertex_list = []
         raw_uv_list = []
         
-        vertex_count = 0
         vertices = []
         indices = []
+        unique_vertex_map = {}
 
-        file = open(model_path, "r")
-        for line in file:
-            # ignora comentarios e linhas vazias
-            if line.startswith('#'): 
-                continue
-            values = line.split()
-            if not values:
-                continue
+        with open(model_path, "r") as file:
+            for line in file:
+                # ignora comentarios e linhas vazias
+                if line.startswith('#'): 
+                    continue
+                values = line.split()
+                if not values:
+                    continue
 
-            ### recuperando vertices
-            if values[0] == 'v':
-                raw_vertex_list.append(values[1:4])
-            ### recuperando coordenadas de textura
-            elif values[0] == 'vt':
-                raw_uv_list.append(values[1:3])
-            ### recuperando faces 
-            elif values[0] == 'f':
-                for v in values[1:]:
-                    # no .obj uma face é definida por indice_vertice/indice_vt/material
-                    # nesse trabalho não usaremos material
-                    parts = v.split('/')
-                    vertex_idx = int(parts[0])
-                    uv_idx = int(parts[1]) if len(parts) > 1 else 1
+                ### recuperando vertices
+                if values[0] == 'v':
+                    raw_vertex_list.append(values[1:4])
+                ### recuperando coordenadas de textura
+                elif values[0] == 'vt':
+                    raw_uv_list.append(values[1:3])
+                ### recuperando faces 
+                elif values[0] == 'f':
+                    for v in values[1:]:
+                        # no .obj uma face é definida por indice_vertice/indice_vt/material
+                        # nesse trabalho não usaremos material
+                        parts = v.split('/')
+                        if len(parts) == 1:
+                            raise Exception("Face sem coordenada de textura")
 
-                    vertex = raw_vertex_list[int(vertex_idx) - 1]
-                    uv = raw_uv_list[int(uv_idx) - 1]
+                        vertex_idx = int(parts[0])
+                        uv_idx = int(parts[1])
 
-                    vertices.extend([*vertex, *uv])
-                    indices.append(vertex_count)
-                    vertex_count += 1
-        file.close()
+                        # índices negativos são do fim da lista
+                        if vertex_idx < 0: 
+                            vertex_idx += len(raw_vertex_list) + 1
+
+                        key = (vertex_idx, uv_idx)
+                        if key in unique_vertex_map:
+                            indices.append(unique_vertex_map[key])
+                        else:                            
+                            vertex = raw_vertex_list[int(vertex_idx) - 1]
+                            uv = raw_uv_list[int(uv_idx) - 1]
+
+                            idx = len(unique_vertex_map)
+                            unique_vertex_map[key] = idx
+
+                            vertices.extend([*vertex, *uv])
+                            indices.append(idx)
 
         self.vertices = np.array(vertices, dtype=np.float32)
         self.indices = np.array(indices, dtype=np.uint32)
