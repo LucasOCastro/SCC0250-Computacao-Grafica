@@ -24,7 +24,7 @@ class Camera:
         self.yaw_range = None
         self.fov_range = [1.0, 45.0]
 
-        self.position = np.array([0.0, 0.0, 3.0], dtype=np.float32)
+        self.position = np.array([0.0, 15.0, 3.0], dtype=np.float32)
         self.up = np.array([0.0, 1.0, 0.0], dtype=np.float32)
         self.set_yaw_pitch(0, 0)
 
