@@ -15,10 +15,17 @@ class Scene:
 
         # self.monstro = MeshObject("assets/monstro/monstro.obj", "assets/monstro/monstro.jpg")
         # self.container.children.append(self.monstro)
+
         self.shroom = MeshObject("assets/shroom/shroom.obj", "assets/shroom/shroom.png")
         self.shroom.set_rot_deg([0, 90, 0])
         self.shroom.set_pos([0, 0, -50])
         self.container.children.append(self.shroom)
+
+        self.frog = MeshObject("assets/frog/frog.obj", "assets/frog/frog.jpg")
+        self.frog.set_rot_deg([-90, 0, 0])
+        self.frog.set_pos([-20, 0, -50])
+        self.frog.set_scale_single(2)
+        self.container.children.append(self.frog)
         
 
     
