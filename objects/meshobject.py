@@ -24,6 +24,30 @@ class MeshObject(Object):
             print(error)
             raise Exception("OpenGL error when creating object")
 
+    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
+        # Super propaga a renderização para os filhos
+        super().render(parent_transformation_matrix, renderer)
+
+        # Atualiza matriz de transformação no shader
+        world_mat = np.dot(parent_transformation_matrix, self.model_matrix)
+        renderer.set_mat4('model', world_mat)
+
+        # Atualiza textura no shader
+        glBindTexture(GL_TEXTURE_2D, self.texture_id)
+
+        # Desenha a mesh
+        glBindVertexArray(self.vao)
+        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
+        glBindVertexArray(0)
+
+    def destroy(self):
+        super().destroy()
+        
+        glDeleteVertexArrays(1, [self.vao])
+        glDeleteBuffers(1, [self.vbo])
+        glDeleteBuffers(1, [self.ebo])
+        glDeleteTextures([self.texture_id])
+
     def _load_model(self, model_path: str) -> None:
         raw_vertex_list = []
         raw_uv_list = []
@@ -49,7 +73,8 @@ class MeshObject(Object):
                     raw_uv_list.append(values[1:3])
                 ### recuperando faces 
                 elif values[0] == 'f':
-                    for v in values[1:]:
+                    face = self._circular_sliding_window_of_three(values[1:])
+                    for v in face:
                         # no .obj uma face é definida por indice_vertice/indice_vt/material
                         # nesse trabalho não usaremos material
                         parts = v.split('/')
@@ -62,7 +87,10 @@ class MeshObject(Object):
                         # índices negativos são do fim da lista
                         if vertex_idx < 0: 
                             vertex_idx += len(raw_vertex_list) + 1
+                        if uv_idx < 0:
+                            uv_idx += len(raw_uv_list) + 1
 
+                        # mantemos unicidade dos pares vertice/uv
                         key = (vertex_idx, uv_idx)
                         if key in unique_vertex_map:
                             indices.append(unique_vertex_map[key])
@@ -91,7 +119,7 @@ class MeshObject(Object):
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices.nbytes, self.indices, GL_STATIC_DRAW)
 
         # Define o layout dos atributos de vértice no shader
-        stride = 5 * self.vertices.itemsize  # 3 (posição) + 2 (uv)
+        stride = 5 * self.vertices.itemsize  # 3 (posição) + 2 (uv) = 5
 
         glEnableVertexAttribArray(0)  # Posição
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(0))
@@ -118,26 +146,12 @@ class MeshObject(Object):
         #image_data = np.array(list(img.getdata()), np.uint8)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
 
-    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
-        # Super propaga a renderização para os filhos
-        super().render(parent_transformation_matrix, renderer)
-
-        # Atualiza matriz de transformação no shader
-        world_mat = np.dot(parent_transformation_matrix, self.model_matrix)
-        renderer.set_mat4('model', world_mat)
-
-        # Atualiza textura no shader
-        glBindTexture(GL_TEXTURE_2D, self.texture_id)
-
-        # Desenha a mesh
-        glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
-        glBindVertexArray(0)
-
-    def destroy(self):
-        super().destroy()
+    def _circular_sliding_window_of_three(self, arr: List) -> List:
+        if len(arr) == 3:
+            return arr
         
-        glDeleteVertexArrays(1, [self.vao])
-        glDeleteBuffers(1, [self.vbo])
-        glDeleteBuffers(1, [self.ebo])
-        glDeleteTextures([self.texture_id])
+        circular_arr = arr + [arr[0]]
+        result = []
+        for i in range(len(circular_arr) - 2):
+            result.extend(circular_arr[i:i+3])
+        return result
