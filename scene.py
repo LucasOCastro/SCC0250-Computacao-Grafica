@@ -1,6 +1,7 @@
 from renderer import Renderer
 from objects.object import Object
 from objects.meshobject import MeshObject
+from objects.actors.Gnome import Gnome
 import numpy as np
 
 class Scene:
@@ -31,6 +32,10 @@ class Scene:
         self.skybox.set_scale_single(1000)
         self.container.children.append(self.skybox)
         
+        self.gnomes = []
+        self.gnomes.append(Gnome("assets/gnomes/gnome1/gnome.obj", "assets/gnomes/gnome1/gnome.png"))
+        self.gnomes[0].set_scale_single(0.1)
+        self.container.children.extend(self.gnomes)
 
     
     def render_scene(self) -> None:
