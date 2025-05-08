@@ -1,24 +1,35 @@
-from objects.object import Object
+import os
 import numpy as np
 from OpenGL.GL import *
 from renderer import Renderer
-from matrixmath import *
-from PIL import Image
+from objects.object import Object
+from materials import Material, MaterialLibrary
 
+ASSETS_SUB_FOLDER = 'assets'
 
 class MeshObject(Object):
-    def __init__(self, model_path: str, texture_path: str):
+    def __init__(self, obj_name: str, default_texture_path: str | None = None):
         super().__init__()
+        
+        self.obj_name = obj_name
+        self.asset_sub_folder = os.path.join(ASSETS_SUB_FOLDER, obj_name)
 
-        # Criação dos buffers VAO, VBO e EBO
+        # Criação dos buffers
         self.vao = glGenVertexArrays(1)
         self.vbo = glGenBuffers(1)
-        self.ebo = glGenBuffers(1)
 
-        # Carrega model e texture
-        self._load_model(model_path)
-        self._load_texture(texture_path)
+        # Carrega a textura padrão, se existir
+        self.material_library = MaterialLibrary()
+        if default_texture_path is not None:
+            default_texture_path = os.path.join(self.asset_sub_folder, default_texture_path)
+            default_material = Material(default_texture_path)
+            self.material_library.set(None, default_material)
 
+        # Carrega o modelo
+        obj_path = os.path.join(self.asset_sub_folder, f"{obj_name}.obj")
+        self._load_obj(obj_path)
+
+        # Verifica erro
         error = glGetError()
         if error != GL_NO_ERROR:
             print(error)
@@ -32,12 +43,9 @@ class MeshObject(Object):
         world_mat = np.dot(parent_transformation_matrix, self.model_matrix)
         renderer.set_mat4('model', world_mat)
 
-        # Atualiza textura no shader
-        glBindTexture(GL_TEXTURE_2D, self.texture_id)
-
-        # Desenha a mesh
         glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
+        for material in self.material_library.materials.values():
+            material.render()
         glBindVertexArray(0)
 
     def destroy(self):
@@ -45,28 +53,32 @@ class MeshObject(Object):
         
         glDeleteVertexArrays(1, [self.vao])
         glDeleteBuffers(1, [self.vbo])
-        glDeleteBuffers(1, [self.ebo])
-        glDeleteTextures([self.texture_id])
 
-    def _load_model(self, model_path: str) -> None:
+        self.material_library.destroy()
+
+    def _load_obj(self, obj_path: str) -> None:
         raw_vertex_list = []
         raw_uv_list = []
         
         vertices = []
-        indices = []
+        material_indices = {}
         unique_vertex_map = {}
 
-        with open(model_path, "r") as file:
+        current_mat = None
+        with open(obj_path, "r") as file:
             for line in file:
-                # ignora comentarios e linhas vazias
-                if line.startswith('#'): 
-                    continue
-                values = line.split()
+                values = line.strip().split()
                 if not values:
                     continue
 
+                ### recuperando materiais
+                if values[0] == 'mtllib':
+                    mtl_path = os.path.join(self.asset_sub_folder, values[1])
+                    self.material_library.load_mtl(mtl_path)
+                elif values[0] == 'usemtl':
+                    current_mat = values[1]
                 ### recuperando vertices
-                if values[0] == 'v':
+                elif values[0] == 'v':
                     raw_vertex_list.append(values[1:4])
                 ### recuperando coordenadas de textura
                 elif values[0] == 'vt':
@@ -75,8 +87,8 @@ class MeshObject(Object):
                 elif values[0] == 'f':
                     face = self._circular_sliding_window_of_three(values[1:])
                     for v in face:
-                        # no .obj uma face é definida por indice_vertice/indice_vt/material
-                        # nesse trabalho não usaremos material
+                        # no .obj uma face é definida por indice_vertice/indice_vt/indice_vn
+                        # nesse trabalho não usaremos normais (vn)
                         parts = v.split('/')
                         if len(parts) == 1:
                             raise Exception("Face sem coordenada de textura")
@@ -90,11 +102,16 @@ class MeshObject(Object):
                         if uv_idx < 0:
                             uv_idx += len(raw_uv_list) + 1
 
+                        # prepara para armazenar os indices no material atual
+                        if current_mat not in material_indices:
+                            material_indices[current_mat] = []
+                        indices = material_indices[current_mat]
+
                         # mantemos unicidade dos pares vertice/uv
                         key = (vertex_idx, uv_idx)
                         if key in unique_vertex_map:
                             indices.append(unique_vertex_map[key])
-                        else:                            
+                        else:
                             vertex = raw_vertex_list[int(vertex_idx) - 1]
                             uv = raw_uv_list[int(uv_idx) - 1]
 
@@ -104,19 +121,18 @@ class MeshObject(Object):
                             vertices.extend([*vertex, *uv])
                             indices.append(idx)
 
-        self.vertices = np.array(vertices, dtype=np.float32)
-        self.indices = np.array(indices, dtype=np.uint32)
-        
         # Define o contexto como sendo o VAO desse objeto
         glBindVertexArray(self.vao)
 
         # Envia dados de vértices para GPU
+        self.vertices = np.array(vertices, dtype=np.float32)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, GL_STATIC_DRAW)
 
-        # Envia índices para GPU
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices.nbytes, self.indices, GL_STATIC_DRAW)
+        # Envia índices para cada material
+        for mat_name, indices in material_indices.items():
+            material = self.material_library.get_or_default(mat_name)
+            material.setup_ebo(indices)
 
         # Define o layout dos atributos de vértice no shader
         stride = 5 * self.vertices.itemsize  # 3 (posição) + 2 (uv) = 5
@@ -129,24 +145,10 @@ class MeshObject(Object):
         
         # Limpa o contexto do VAO
         glBindVertexArray(0)
-
-    def _load_texture(self, texture_path: str) -> None:
-        self.texture_id = glGenTextures(1)
-
-        glBindTexture(GL_TEXTURE_2D, self.texture_id)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         
-        img = Image.open(texture_path)
-        img_width = img.size[0]
-        img_height = img.size[1]
-        image_data = img.tobytes("raw", "RGB", 0, -1)
-        #image_data = np.array(list(img.getdata()), np.uint8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
+    
 
-    def _circular_sliding_window_of_three(self, arr: List) -> List:
+    def _circular_sliding_window_of_three(self, arr: list) -> list:
         if len(arr) == 3:
             return arr
         
