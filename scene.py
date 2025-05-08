@@ -26,6 +26,10 @@ class Scene:
         self.frog.set_pos([-20, 0, -50])
         self.frog.set_scale_single(2)
         self.container.children.append(self.frog)
+
+        self.skybox = MeshObject("assets/skybox/skybox.obj", "assets/skybox/skybox.png")
+        self.skybox.set_scale_single(1000)
+        self.container.children.append(self.skybox)
         
 
     

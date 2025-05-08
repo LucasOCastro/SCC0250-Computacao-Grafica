@@ -20,7 +20,7 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
-    camera = Camera(window, 0.1, 100, 45)
+    camera = Camera(window, 0.1, 10000, 45)
 
     # Cria a cena com todos os objetos
     scene = Scene(renderer)
@@ -29,7 +29,9 @@ def main():
     input = Input(window)
     scene_input = SceneInput(scene, renderer, input)
 
-
+    # sem isso, skybox fica com arestas brancas
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time
