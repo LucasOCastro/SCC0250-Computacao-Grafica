@@ -4,7 +4,7 @@ from OpenGL.GL import *
 from renderer import Renderer
 from matrixmath import *
 from PIL import Image
-
+from input import Input
 
 class MeshObject(Object):
     def __init__(self, model_path: str, texture_path: str):
@@ -155,3 +155,6 @@ class MeshObject(Object):
         for i in range(len(circular_arr) - 2):
             result.extend(circular_arr[i:i+3])
         return result
+    
+    def update(self, input : Input, delta_time: float) -> None:
+       pass
