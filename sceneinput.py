@@ -16,4 +16,5 @@ class SceneInput:
         input.register_key_callback(glfw.KEY_P, renderer.toggle_wireframe)
 
     def update(self, delta_time: float) -> None:
-        pass
+        for element in self.scene.container.children:
+            element.update(self.input, delta_time)
