@@ -12,7 +12,7 @@ from scene import Scene
 
 def main():
     # Cria a janela configurada
-    window = Window(1080, 900, "Bosque")
+    window = Window(1920, 1080, "Bosque")
     if (window.window == None):
         return
 
@@ -30,8 +30,8 @@ def main():
     scene_input = SceneInput(scene, renderer, input)
 
     # sem isso, skybox fica com arestas brancas
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time
@@ -42,6 +42,7 @@ def main():
         input.update()
         
         renderer.set_camera(camera)
+        scene.skybox.set_pos(camera.position)
         scene.render_scene()
         window.post_render()
 
