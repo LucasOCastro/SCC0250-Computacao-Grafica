@@ -8,11 +8,11 @@ from materials import Material, MaterialLibrary
 ASSETS_SUB_FOLDER = 'assets'
 
 class MeshObject(Object):
-    def __init__(self, obj_name: str, default_texture_path: str | None = None):
+    def __init__(self, obj_sub_dir: str, default_texture_path: str | None = None):
         super().__init__()
         
-        self.obj_name = obj_name
-        self.asset_sub_folder = os.path.join(ASSETS_SUB_FOLDER, obj_name)
+        self.obj_name = os.path.basename(obj_sub_dir).rstrip(".obj")
+        self.asset_sub_folder = os.path.join(ASSETS_SUB_FOLDER, os.path.dirname(obj_sub_dir))
 
         # Criação dos buffers
         self.vao = glGenVertexArrays(1)
@@ -25,8 +25,7 @@ class MeshObject(Object):
             self.material_library.set(None, default_material)
 
         # Carrega o modelo
-        obj_path = os.path.join(self.asset_sub_folder, f"{obj_name}.obj")
-        self._load_obj(obj_path)
+        self._load_obj(os.path.join(ASSETS_SUB_FOLDER, obj_sub_dir))
 
         # Verifica erro
         error = glGetError()
