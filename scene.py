@@ -1,7 +1,8 @@
+import numpy as np
+from OpenGL.GL import *
 from renderer import Renderer
 from objects.object import Object
 from objects.meshobject import MeshObject
-import numpy as np
 
 class Scene:
     def __init__(self, renderer: Renderer):
@@ -13,9 +14,6 @@ class Scene:
         self.container = Object()
         self.container.set_pos([0, 0, 0])
 
-        # self.monstro = MeshObject("assets/monstro/monstro.obj", "assets/monstro/monstro.jpg")
-        # self.container.children.append(self.monstro)
-
         self.shroom = MeshObject("shroom", "shroom.png")
         self.shroom.set_rot_deg([0, 90, 0])
         self.shroom.set_pos([0, 0, -50])
@@ -25,7 +23,12 @@ class Scene:
         self.frog.set_rot_deg([-90, 0, 0])
         self.frog.set_pos([-20, 0, -50])
         self.frog.set_scale_single(2)
-        self.container.children.append(self.frog) 
+        self.container.children.append(self.frog)
+        
+        self.scenario = MeshObject("scenario")
+        self.scenario.set_scale_single(0.4)
+        self.scenario.set_pos([0, 0, -50])
+        self.container.children.append(self.scenario)
 
     
     def render_scene(self) -> None:
