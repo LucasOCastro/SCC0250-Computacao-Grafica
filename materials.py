@@ -55,6 +55,18 @@ class Material:
     def destroy(self):
         glDeleteTextures([self.texture_id])
 
+    @staticmethod
+    def try_load_material(file_name: str, root_path: str):
+        file_path = os.path.join(root_path, TEXTURE_SUB_FOLDER, file_name)
+        if os.path.isfile(file_path):
+            return Material(file_path)
+        
+        file_path = os.path.join(root_path, file_name)
+        if os.path.isfile(file_path):
+            return Material(file_path)
+        
+        raise Exception(f"Could not find texture {file_name} in {root_path}")
+
 class MaterialLibrary:
     def __init__(self):
         self.materials = {}
@@ -80,8 +92,7 @@ class MaterialLibrary:
                     current_material_name = values[1]
                 elif values[0] == 'map_Kd':
                     file_name = os.path.basename(values[1])
-                    file_path = os.path.join(folder, TEXTURE_SUB_FOLDER, file_name)
-                    self.materials[current_material_name] = Material(file_path)
+                    self.materials[current_material_name] = Material.try_load_material(file_name, folder)
                     current_material_name = None
 
         if current_material_name is not None:
@@ -92,7 +103,7 @@ class MaterialLibrary:
         return self.materials[material_name]
 
     def get_or_default(self, material_name: str) -> Material:
-        if material_name in self.materials:
+        if material_name in self.materials and self.materials[material_name] is not None:
             return self.materials[material_name]
         
         if None in self.materials:
@@ -107,7 +118,7 @@ class MaterialLibrary:
         raise Exception(f"Material {material_name} does not exist and there is no default material")
     
     def set(self, material_name: str, material: Material):
-        self.materials[material_name] = material
+        self.materials[material_name] = material   
     
     def destroy(self):
         for material in self.materials.values():

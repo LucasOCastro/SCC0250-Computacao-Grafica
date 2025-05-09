@@ -21,8 +21,7 @@ class MeshObject(Object):
         # Carrega a textura padrão, se existir
         self.material_library = MaterialLibrary()
         if default_texture_path is not None:
-            default_texture_path = os.path.join(self.asset_sub_folder, default_texture_path)
-            default_material = Material(default_texture_path)
+            default_material = Material.try_load_material(default_texture_path, self.asset_sub_folder)
             self.material_library.set(None, default_material)
 
         # Carrega o modelo
