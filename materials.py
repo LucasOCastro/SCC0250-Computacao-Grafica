@@ -29,7 +29,6 @@ class Material:
         img = Image.open(texture_path).convert("RGBA")
         img_width, img_height = img.size
         image_data = img.tobytes("raw", "RGBA", 0, -1)
-        # Allocate an RGBA texture on the GPU:
         glTexImage2D(
             GL_TEXTURE_2D, 0,
             GL_RGBA,
