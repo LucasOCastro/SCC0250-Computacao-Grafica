@@ -12,7 +12,7 @@ from scene import Scene
 
 def main():
     # Cria a janela configurada
-    window = Window(1080, 900, "Bosque")
+    window = Window(1920, 1080, "Bosque")
     if (window.window == None):
         return
 
@@ -20,7 +20,7 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
-    camera = Camera(window, 0.1, 100, 45)
+    camera = Camera(window, 0.1, 500, 45)
 
     # Cria a cena com todos os objetos
     scene = Scene(renderer)
