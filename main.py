@@ -12,7 +12,7 @@ from scene import Scene
 
 def main():
     # Cria a janela configurada
-    window = Window(1080, 900, "Bosque")
+    window = Window(1920, 1080, "Bosque")
     if (window.window == None):
         return
 
