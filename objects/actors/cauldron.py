@@ -1,5 +1,6 @@
 from objects.object import Object
 from objects.meshobject import MeshObject
+from objects.particlesystem import ParticleSystem
 from input import Input
 import numpy as np
 import glfw
@@ -33,11 +34,17 @@ class Cauldron(Object):
         self.spoon = MeshObject("spoon/spoon.obj")
         self.spoon.set_pos(self.spoon_move_center)
         self.children.append(self.spoon)
-
+        
+        particles = [MeshObject("skulls/skull1/Skull.obj") for _ in range(20)]
+        self.particle_system = ParticleSystem(particles)
+        self.particle_system.set_pos([0, 5, 0])
+        self.particle_system.active = False
+        self.children.append(self.particle_system)
+    
     def update(self, input: Input, delta_time: float) -> None:
+        super().update(input, delta_time)
         self.t += delta_time
         self.state_t += delta_time
-
         self.states[self.state](input)
 
     """
@@ -71,9 +78,11 @@ class Cauldron(Object):
 
     
     def _moving_state(self, input: Input):
+        self.particle_system.active = True
         if input.is_key_held(glfw.KEY_H):
             self.state = Cauldron.MOVE_TO_REST
             self.state_t = 0
+            self.particle_system.active = False
             return
 
         pos, rot = self._get_move_spoon_pos_rot()
