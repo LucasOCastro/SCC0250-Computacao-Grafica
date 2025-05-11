@@ -1,0 +1,12 @@
+# Blender 4.4.3 MTL File: 'None'
+# www.blender.org
+
+newmtl 20951_Mushroom_v1
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.189000 0.189000 0.189000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd D:/Faculdade/CompGraf/T1/assets/Mushroom_v2_L1.123cacede70b-d92f-47ba-8ec3-cadd8a8e0266/20951_Mushroom_Diffuse.jpg
