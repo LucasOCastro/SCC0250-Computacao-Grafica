@@ -15,10 +15,10 @@ class Camera:
         self.far = far
         self.fov = fov
         
-        self.move_speed = 5
-        self.move_speed_fast = 10
+        self.move_speed = 10
+        self.move_speed_fast = 30
         self.sensitivity = 4
-        self.zoom_speed = 1
+        self.zoom_speed = 100
         
         self.pitch_range = [-89, 89]
         self.yaw_range = None
@@ -41,7 +41,8 @@ class Camera:
     
     def get_projection_matrix(self) -> np.array:
         aspect = self.window.width / self.window.height
-        projection = glm.perspective(self.fov, aspect, self.near, self.far)
+        rad_fov = np.deg2rad(self.fov)
+        projection = glm.perspective(rad_fov, aspect, self.near, self.far)
         return np.array(projection)
     
     def set_yaw_pitch(self, yaw: float, pitch: float) -> None:
@@ -66,7 +67,7 @@ class Camera:
         fast = input.is_key_held(glfw.KEY_LEFT_SHIFT)
         self._update_movement(move_axis, delta_time, fast)
         self._update_rotation(input.mouse_delta, delta_time)
-        self._update_zoom(input.scroll_delta, delta_time)
+        self._update_zoom(input.scroll_delta[1], delta_time)
 
     def _update_movement(self, move_input: np.array, delta_time: float, fast: bool = False) -> None:
         if move_input[0] == 0.0 and move_input[1] == 0.0 and move_input[2] == 0.0:
@@ -83,18 +84,16 @@ class Camera:
             return
 
         rotation_delta = mouse_delta * self.sensitivity * delta_time
-        
         yaw = self.yaw - rotation_delta[0] 
         pitch = self.pitch - rotation_delta[1]
         self.set_yaw_pitch(yaw, pitch)
 
-    def _update_zoom(self, scroll_delta: np.array, delta_time: float) -> None:
-        if scroll_delta[0] == 0.0 and scroll_delta[1] == 0.0:
+    def _update_zoom(self, scroll_delta: float, delta_time: float) -> None:
+        if scroll_delta == 0.0:
             return
 
-        self.fov -= scroll_delta[1] * self.zoom_speed * delta_time
-        self.fov = self._clamp_to_range(self.fov, self.fov_range)
-        
+        fov = self.fov - scroll_delta * self.zoom_speed * delta_time
+        self.fov = self._clamp_to_range(fov, self.fov_range)
 
     def _clamp_to_range(self, value: float, range: list) -> float:
         if range is None:
