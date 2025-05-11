@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from OpenGL.GL import *
+from input import Input
 from renderer import Renderer
 from objects.object import Object
 from materials import Material, MaterialLibrary
@@ -155,3 +156,6 @@ class MeshObject(Object):
         for i in range(len(circular_arr) - 2):
             result.extend(circular_arr[i:i+3])
         return result
+    
+    def update(self, input : Input, delta_time: float) -> None:
+       pass

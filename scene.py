@@ -3,6 +3,8 @@ from OpenGL.GL import *
 from renderer import Renderer
 from objects.object import Object
 from objects.meshobject import MeshObject
+from objects.actors.Gnome import Gnome
+from objects.actors.Frog import FrogCrowned
 
 class Scene:
     def __init__(self, renderer: Renderer):
@@ -27,12 +29,29 @@ class Scene:
         self.shroom.set_pos([0, 0, -50])
         self.container.children.append(self.shroom)
 
-        self.frog = MeshObject("frog/frog.obj", "frog.jpg")
-        self.frog.set_rot_deg([-90, 0, 0])
-        self.frog.set_pos([-20, 0, -50])
-        self.frog.set_scale_single(2)
+        frog_pos = np.array([-30, 0, -50])
+        self.frog = FrogCrowned()
+        self.frog.set_pos(frog_pos)
         self.container.children.append(self.frog)
+        
+        self.frog_house = MeshObject("frog_house/frog_house.obj", "frog_house.png")
+        self.frog_house.set_pos(frog_pos + [0, 0, -30])
+        self.frog_house.set_scale_single(8)
+        self.container.children.append(self.frog_house)
 
+        GNOMES_NUM = 7
+        gnomes = [Gnome("gnomes/gnome1/gnome.obj", "gnome.png") for _ in range(GNOMES_NUM)]
+        angle_step = 2*np.pi / GNOMES_NUM
+        for i, gnome in enumerate(gnomes):
+            #posiciona os gnomos em um circulo
+            offset = np.array((frog_pos), dtype=np.float32)
+            radius = 10
+            gnome.set_pos(offset + np.array([np.cos(angle_step* i)*radius, 0, np.sin(angle_step* i)*radius], dtype=np.float32))
+            gnome.set_scale_single(0.15)
+            #seta a rotacao de modo que o gnome fique olhando para o centro do circulo
+            gnome.set_rot_rad([0, -angle_step*i - np.pi/2, 0]) 
+        self.gnomes = gnomes
+        self.container.children.extend(self.gnomes)
 
     
     def render_scene(self) -> None:
