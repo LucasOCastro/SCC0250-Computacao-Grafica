@@ -34,7 +34,10 @@ class Scene:
         self.frog.set_pos(frog_pos)
         self.container.children.append(self.frog)
         
-
+        self.frog_house = MeshObject("frog_house/frog_house.obj", "frog_house.png")
+        self.frog_house.set_pos(frog_pos + [0, 0, -30])
+        self.frog_house.set_scale_single(8)
+        self.container.children.append(self.frog_house)
 
         GNOMES_NUM = 7
         gnomes = [Gnome("gnomes/gnome1/gnome.obj", "gnome.png") for _ in range(GNOMES_NUM)]
