@@ -20,23 +20,17 @@ class Cauldron(Object):
         self.spoon_move_center = np.array([0, 6, 0], dtype=np.float32)
         self.state = Cauldron.RESTING
         self.states = {
-            Cauldron.RESTING: self.rest_state,
-            Cauldron.REST_TO_MOVE: self.rest_to_move_state,
-            Cauldron.MOVING: self.moving_state,
-            Cauldron.MOVE_TO_REST: self.move_to_rest_state
+            Cauldron.RESTING: self._rest_state,
+            Cauldron.REST_TO_MOVE: self._rest_to_move_state,
+            Cauldron.MOVING: self._moving_state,
+            Cauldron.MOVE_TO_REST: self._move_to_rest_state
         }
 
-        self.make_pot()
-        self.make_spoon()
-
-    def make_pot(self):
         self.pot = MeshObject("cauldron/cauldron.obj")
         self.pot.set_scale_single(0.6)
         self.children.append(self.pot)
 
-    def make_spoon(self):
         self.spoon = MeshObject("spoon/spoon.obj")
-        self.spoon.set_rot_deg([90, 0, 0])
         self.spoon.set_pos(self.spoon_move_center)
         self.children.append(self.spoon)
 
@@ -46,68 +40,93 @@ class Cauldron(Object):
 
         self.states[self.state](input)
 
-
     """
         ESTADOS
     """
-    def rest_state(self, input: Input):
+    def _transition_lerp(self, a, b):
+        return a + (b - a) * (self.state_t / self.transition_time)
+
+    def _rest_state(self, input: Input):
         if input.is_key_held(glfw.KEY_H):
             self.state = Cauldron.REST_TO_MOVE
             self.state_t = 0
             return
 
-        pos = self.get_rest_spoon_pos()
+        pos, rot = self._get_rest_spoon_pos_rot()
         self.spoon.set_pos(pos)
+        self.spoon.set_rot_rad(rot)
     
-    def rest_to_move_state(self, input: Input):
+    def _rest_to_move_state(self, input: Input):
         if self.state_t > self.transition_time:
             self.state = Cauldron.MOVING
             self.state_t = 0
             return
 
-        rest_pos = self.get_rest_spoon_pos()
-        move_pos = self.get_move_spoon_pos()
-        pos = rest_pos + (move_pos - rest_pos) * (self.state_t / self.transition_time)
+        rest_pos, rest_rot = self._get_rest_spoon_pos_rot()
+        move_pos, move_rot = self._get_move_spoon_pos_rot()
+        pos = self._transition_lerp(rest_pos, move_pos)
+        rot = self._transition_lerp(rest_rot, move_rot)
         self.spoon.set_pos(pos)
+        self.spoon.set_rot_rad(rot)
+
     
-    def moving_state(self, input: Input):
+    def _moving_state(self, input: Input):
         if input.is_key_held(glfw.KEY_H):
             self.state = Cauldron.MOVE_TO_REST
             self.state_t = 0
             return
 
-        pos = self.get_move_spoon_pos()
+        pos, rot = self._get_move_spoon_pos_rot()
         self.spoon.set_pos(pos)
+        self.spoon.set_rot_rad(rot)
 
-    def move_to_rest_state(self, input: Input):
+    def _move_to_rest_state(self, input: Input):
         if self.state_t > self.transition_time:
             self.state = Cauldron.RESTING
             self.state_t = 0
             return
 
-        move_pos = self.get_move_spoon_pos()
-        rest_pos = self.get_rest_spoon_pos()
-        pos = move_pos + (rest_pos - move_pos) * (self.state_t / self.transition_time)
+        move_pos, move_rot = self._get_move_spoon_pos_rot()
+        rest_pos, rest_rot = self._get_rest_spoon_pos_rot()
+        pos = self._transition_lerp(move_pos, rest_pos)
+        rot = self._transition_lerp(move_rot, rest_rot)
         self.spoon.set_pos(pos)
+        self.spoon.set_rot_rad(rot)
     
     """
         POSIÇÕES
     """
 
-    def get_rest_spoon_pos(self):
+    def _get_rest_spoon_pos_rot(self) -> tuple[np.ndarray, np.ndarray]:
         hover_amp = 0.6
         hover_freq = 1
+        rot_freq = 0.5
+
         y_off = hover_amp * np.sin(self.t * hover_freq)
         off = np.array([0, y_off, 0], dtype=np.float32)
-        return self.spoon_rest_center + off
+        pos = self.spoon_rest_center + off
+
+        rad = (self.t * rot_freq) % 2 * np.pi
+        rot = np.array([0, rad, 0], dtype=np.float32)
         
-    def get_move_spoon_pos(self):
+        return pos, rot
+        
+    def _get_move_spoon_pos_rot(self):
         hover_amp = 1
         hover_freq = 3
         move_radius = 1
         move_freq = 2
-        x_off = move_radius * np.sin(self.t * move_freq)
-        z_off = move_radius * np.cos(self.t * move_freq)
+
+        rad = (self.t * move_freq) % 2 * np.pi
+        rot = np.array([0, rad, 0], dtype=np.float32)
+
+        x_off = move_radius * np.sin(rad)
+        z_off = move_radius * np.cos(rad)
         y_off = hover_amp * np.sin(self.t * hover_freq)
         off = np.array([x_off, y_off, z_off], dtype=np.float32)
-        return self.spoon_move_center + off
+        pos =  self.spoon_move_center + off
+
+        
+        return pos, rot
+
+
