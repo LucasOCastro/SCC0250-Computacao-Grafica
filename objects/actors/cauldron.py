@@ -34,7 +34,7 @@ class Cauldron(Object):
         self.spoon.set_pos(self.spoon_move_center)
         self.children.append(self.spoon)
 
-    def update(self, delta_time: float, input: Input) -> None:
+    def update(self, input: Input, delta_time: float) -> None:
         self.t += delta_time
         self.state_t += delta_time
 

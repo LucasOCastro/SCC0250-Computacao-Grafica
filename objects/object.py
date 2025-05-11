@@ -93,3 +93,7 @@ class Object:
         for child in self.children:
             child.destroy()
 
+    def update(self, *args):
+        """Atualiza o objeto e seus filhos"""
+        for child in self.children:
+            child.update(*args)
