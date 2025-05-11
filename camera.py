@@ -5,11 +5,36 @@ from window import Window
 from input import Input
 from matrixmath import *
 
+CAMERA_GROUND = 1.0
+CAMERA_MAX_HEIGHT = 100.0
+SCENE_CENTER = np.array([0.0, 0.0, -50.0], dtype=np.float32)
+ALLOWED_RADIUS = 75.0
+
+def is_in_vertical_bounds(position: np.array) -> bool:
+    """
+    Verifica se a posição está dentro dos limites definidos.
+    """
+    if position[1] < CAMERA_GROUND or position[1] > CAMERA_MAX_HEIGHT:
+        return False
+    return True
+
+def is_in_horizontal_bounds(position: np.array) -> bool:
+    """
+    Verifica se a posição está dentro dos limites definidos.
+    """
+    pos_xz = np.array([position[0], position[2]], dtype=np.float32)
+    scene_center_xz = np.array([SCENE_CENTER[0], SCENE_CENTER[2]], dtype=np.float32)
+    distance = np.linalg.norm(pos_xz - scene_center_xz)
+    if distance > ALLOWED_RADIUS:
+        return False
+    return True
+
+
 class Camera:
     """
     Classe que representa uma camera 3D.
     """
-    def __init__(self, window: Window, near: float, far: float, fov: float):
+    def __init__(self, window: Window, near: float, far: float, fov: float, limit_functions: List[callable] = [is_in_vertical_bounds, is_in_horizontal_bounds]) -> None:
         self.window = window
         self.near = near
         self.far = far
@@ -30,6 +55,9 @@ class Camera:
 
         # Captura o mouse
         glfw.set_input_mode(window.window, glfw.CURSOR, glfw.CURSOR_DISABLED)
+
+        #seta as funções de limite do movimento da camera
+        self.limit_functions = limit_functions
 
 
     def get_view_matrix(self) -> np.array:
@@ -77,6 +105,13 @@ class Camera:
 
         movement_direction = transform_vector(move_input, self.rotation_matrix)
         movement_delta = movement_direction * move_speed * delta_time
+        if self.limit_functions is not None:
+            new_position = self.position + movement_delta
+            # Verifica se a nova posição está dentro dos limites, se não estiver, não atualiza a posição.
+            for limit_function in self.limit_functions:
+                if not limit_function(new_position):
+                    return
+            
         self.position += movement_delta
 
     def _update_rotation(self, mouse_delta: np.array, delta_time: float) -> None:

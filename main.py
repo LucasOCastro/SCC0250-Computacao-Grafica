@@ -20,7 +20,7 @@ def main():
     vert_path = "shaders/vert.glsl"
     frag_path = "shaders/frag.glsl"
     renderer = Renderer(vert_path, frag_path)
-    camera = Camera(window, 0.1, 10000, 45)
+    camera = Camera(window, 0.1, 20000, 45)
 
     # Cria a cena com todos os objetos
     scene = Scene(renderer)
