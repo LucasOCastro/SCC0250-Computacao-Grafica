@@ -30,18 +30,6 @@ class Scene:
         self.container.children.append(self.shroom)
 
         frog_pos = np.array([-30, 0, -50])
-        # self.frog = MeshObject("frog/frog.obj", "frog.jpg")
-        # self.frog.set_rot_deg([-90, 0, 0])
-        # self.frog.set_pos(frog_pos)
-        # self.frog.set_scale_single(2)
-        # self.container.children.append(self.frog)
-        # self.crown = MeshObject("crown/crown.obj", "crown.png")
-        # self.crown.set_rot_deg([-30, 0, 0])
-        # self.crown.set_pos(frog_pos + np.array([0, 6, 4], dtype=np.float32))
-        # self.crown.set_scale_single(2)
-        # self.frog_container = Object()
-
-        # self.container.children.append(self.crown)
         self.frog = FrogCrowned()
         self.frog.set_pos(frog_pos)
         self.container.children.append(self.frog)
