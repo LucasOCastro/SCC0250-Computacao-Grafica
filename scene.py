@@ -3,6 +3,7 @@ from OpenGL.GL import *
 from renderer import Renderer
 from objects.object import Object
 from objects.meshobject import MeshObject
+from objects.actors.cauldron import Cauldron
 
 class Scene:
     def __init__(self, renderer: Renderer):
@@ -22,16 +23,19 @@ class Scene:
         self.scenario.set_pos([0, 0, -50])
         self.container.children.append(self.scenario)
 
-        self.shroom = MeshObject("shroom/shroom.obj", "shroom.png")
-        self.shroom.set_rot_deg([0, 90, 0])
+        self.shroom = MeshObject("shroom/shroom_new.obj")
+        self.shroom.set_scale_single(5)
+        self.shroom.set_rot_deg([0, -100, 0])
         self.shroom.set_pos([0, 0, -50])
         self.container.children.append(self.shroom)
 
-        self.frog = MeshObject("frog/frog.obj", "frog.jpg")
-        self.frog.set_rot_deg([-90, 0, 0])
-        self.frog.set_pos([-20, 0, -50])
-        self.frog.set_scale_single(2)
-        self.container.children.append(self.frog)
+        self.witch = MeshObject("witch/witch.obj")
+        self.witch.set_scale_single(6)
+        self.witch.set_pos([0, 8, -60])
+        self.container.children.append(self.witch)
+        
+        self.cauldron = Cauldron()
+        self.container.children.append(self.cauldron)
 
 
     
