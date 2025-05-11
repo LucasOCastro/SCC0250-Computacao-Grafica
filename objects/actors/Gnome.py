@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Gnome(meshobject.MeshObject):
-    def __init__(self, path: str, texture_path: str, gravity = -1, ground_y = 0.0, jump_key = glfw.KEY_U, jump_max = 0.15) -> None:
+    def __init__(self, path: str, texture_path: str, gravity = -1, ground_y = 0.0, jump_key = glfw.KEY_U, jump_max = 15) -> None:
         super().__init__(path, texture_path)
         self.velocity = np.zeros(3, dtype=np.float32)
         self.on_ground = True
@@ -16,14 +16,14 @@ class Gnome(meshobject.MeshObject):
         self.will_jump = False
         self.jump_interval = 0.0
         self.jump_max = jump_max
-    def jump(self, velocity=0.25) -> None:
+    def jump(self,delta_time : float, velocity=0.25, ) -> None:
         #esperando dar o intervalo aleatório do pulo
         if self.on_ground:
             self.will_jump = False
             jump_modifier = np.random.normal(1.30, 0.5)
             jump_modifier = max(0.0, jump_modifier)
             velocity *= jump_modifier
-            velocity = min(velocity, np.sqrt(-self.jump_max*2*self.gravity))
+            velocity = min(velocity, np.sqrt(-self.jump_max*2*self.gravity*delta_time))
             self.ground_y = self.position[1]
             self.velocity[1] = velocity
             self.on_ground = False
@@ -45,7 +45,7 @@ class Gnome(meshobject.MeshObject):
         if (input.is_key_held(self.jump_key) or self.auto_jump) and self.on_ground and self.will_jump == False:
             self.start_jump()
         if self.will_jump and self.jump_interval <= 0:
-            self.jump()
+            self.jump(delta_time=delta_time)
         else:
             self.jump_interval -= delta_time * 100
             
