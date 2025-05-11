@@ -35,6 +35,7 @@ class Scene:
         self.container.children.append(self.witch)
         
         self.cauldron = Cauldron()
+        self.cauldron.set_pos([0, 8, -52])
         self.container.children.append(self.cauldron)
 
 
