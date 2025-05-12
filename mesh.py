@@ -9,6 +9,9 @@ ASSETS_SUB_FOLDER = 'assets'
 loaded_meshes = {}
 
 class Mesh:
+    """
+    Objeto que representa um mesh carregado de um arquivo .obj
+    """
     def __init__(self, obj_path: str, default_texture_path: str | None = None):
         self.obj_name = os.path.basename(obj_path).rstrip(".obj")
         self.asset_sub_folder = os.path.join(ASSETS_SUB_FOLDER, os.path.dirname(obj_path))
@@ -32,9 +35,12 @@ class Mesh:
             print(error)
             raise Exception("OpenGL error when creating object")
 
-    def render(self, transformation_matrix: np.ndarray, renderer: Renderer):
-        # Atualiza matriz de transformação no shader
-        renderer.set_mat4('model', transformation_matrix)
+    def render(self):
+        """
+        Renderiza a malha vinculando seu Vertex Array Object (VAO) e iterando por todos os materiais para renderizá-los.
+        Antes de chamar este método, é necessário configurar os valores na shader, como a matriz de transformação.
+        Após a renderização, o VAO é desvinculado.
+        """
         glBindVertexArray(self.vao)
         for material in self.material_library.materials.values():
             material.render()
@@ -43,7 +49,6 @@ class Mesh:
     def destroy(self):
         glDeleteVertexArrays(1, [self.vao])
         glDeleteBuffers(1, [self.vbo])
-
         self.material_library.destroy()
 
     def _load_obj(self, obj_path: str):
@@ -148,6 +153,11 @@ class Mesh:
 
     @staticmethod
     def from_path(obj_path: str, default_texture_path: str | None = None) -> "Mesh":
+        """
+        Se o arquivo .obj já tiver sido carregado, retorna o objeto Mesh
+        armazenado em memória. Caso contrário, carrega o arquivo .obj,
+        cria um objeto Mesh e armazena ele em memória para uso futuro.
+        """
         key = (obj_path, default_texture_path)
         if key not in loaded_meshes:
             loaded_meshes[key] = Mesh(obj_path, default_texture_path)

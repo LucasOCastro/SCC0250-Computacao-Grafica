@@ -3,6 +3,7 @@ from objects.meshobject import MeshObject
 import numpy as np
 
 class Particle:
+    """Representa uma partícula instanciada."""
     def __init__(self, obj: Object, start_pos: np.ndarray, end_pos: np.ndarray, start_scale: float, end_scale: float, start_rot: np.ndarray, end_rot: np.ndarray, lifetime: float):
         self.obj = obj
         self.start_pos = start_pos
@@ -13,25 +14,28 @@ class Particle:
         self.end_rot = end_rot
         self.lifetime = lifetime
         self.t = 0
-        self.update_transform()
+        self._update_transform()
 
 
     def update(self, delta_time: float) -> bool:
-        """ Returns True if particle should be deleted """
+        """Retorna True se a partícula deve ser removida."""
         self.t += delta_time
-        self.update_transform()
+        self._update_transform()
         return self.t > self.lifetime
     
-    def update_transform(self):
-        self.obj.set_pos(self.lerp(self.start_pos, self.end_pos))
-        self.obj.set_scale_single(self.lerp(self.start_scale, self.end_scale))
-        self.obj.set_rot_deg(self.lerp(self.start_rot, self.end_rot))
+    def _update_transform(self):
+        self.obj.set_pos(self._lerp(self.start_pos, self.end_pos))
+        self.obj.set_scale_single(self._lerp(self.start_scale, self.end_scale))
+        self.obj.set_rot_deg(self._lerp(self.start_rot, self.end_rot))
     
-    def lerp(self, a, b):
+    def _lerp(self, a, b):
         return a + (b - a) * (self.t / self.lifetime)
 
 
 class ParticleSystem(Object):
+    """
+    Objeto que cria partículas em um círculo, animando-as e destruindo-as quando acabam.
+    """
     def __init__(self, meshes: list[str], radius: float = 1, time_to_spawn: float = 0.5, height_range: tuple[float, float] = [1, 2], lifetime__range: tuple[float, float] = [1, 2], scale_range: tuple[float, float] = [1, 2]):
         super().__init__()
 
@@ -81,7 +85,6 @@ class ParticleSystem(Object):
         self.active_particles.remove(particle)
         self.children.remove(particle.obj)
         particle.obj.destroy()
-        
 
     def _rand_pos_in_circle(self):
         angle = np.random.uniform(0, 2 * np.pi)

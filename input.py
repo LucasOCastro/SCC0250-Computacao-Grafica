@@ -24,17 +24,28 @@ class Input:
         glfw.set_cursor_pos_callback(window.window, functools.partial(self._mouse_event))
         glfw.set_scroll_callback(window.window, functools.partial(self._scroll_event))
 
-    def update(self) -> None:
+    def clear_deltas(self) -> None:
+        """
+        Reseta os deltas de mouse e scroll para zero.
+        Este método deve ser chamado no fim de cada ciclo de update de entrada
+        para garantir que as deltas não acumulam entre os frames.
+        """
         self.mouse_delta = np.array([0.0, 0.0], dtype=np.float32)
         self.scroll_delta = np.array([0.0, 0.0], dtype=np.float32)
 
     def register_key_callback(self, key: int, callback: callable) -> None:
+        """
+        Registra uma função de callback para ser chamada quando uma tecla especificada for pressionada.
+        """
         if key in self.key_press_callbacks:
             self.key_press_callbacks[key].append(callback)
         else:
             self.key_press_callbacks[key] = [callback]
     
     def is_key_held(self, key: int) -> bool:
+        """
+        Retorna True se a tecla especificada estiver pressionada.
+        """
         return key in self.held_keys
 
     def get_1d_axis(self, key_pos: int, key_neg: int) -> float:
@@ -90,11 +101,13 @@ class Input:
     ###### Callbacks ######
 
     def _key_event(self, window, key, scancode, action, mods) -> None:
+        # Fecha a janela ao pressionar ESC
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(window, True)
             return
         
-        # Rastreamento de teclas pressionadas
+        # Registra teclas pressionadas. 
+        # Não usamos o "repeat" porque o glfw não reconhece várias teclas simultâneas.
         if action == glfw.PRESS:
             self.held_keys.add(key)
             self._fire_callbacks(key)
@@ -102,14 +115,17 @@ class Input:
             self.held_keys.discard(key)
 
     def _mouse_event(self, window, xpos, ypos):
+        #Atualiza o movimento do mouse a partir da posição atual e anterior.
         mouse_pos = np.array([xpos, ypos], dtype=np.float32)
         self.mouse_delta = mouse_pos - self.mouse_pos
         self.mouse_pos = mouse_pos
 
     def _scroll_event(self, window, xoffset, yoffset):
+        #Apesar do mouse não ter scroll horizontal, armazenamos x e y por completude.
         self.scroll_delta = np.array([xoffset, yoffset], dtype=np.float32)
     
     def _fire_callbacks(self, key: int) -> None:
+        """Chama callbacks para uma tecla específica, se houver algum registrado."""
         if key in self.key_press_callbacks:
             for callback in self.key_press_callbacks[key]:
                 callback()

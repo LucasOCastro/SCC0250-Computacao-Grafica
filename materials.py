@@ -7,9 +7,10 @@ TEXTURE_SUB_FOLDER = 'textures'
 
 class Material:
     """
-    Usually, a material would only keep global info, such as texture. 
-    Then a MaterialInstance would have an ebo, indices, and general unique info.
-    For simplicity, we merged both concepts.
+    Representa uma instância de material simples, definido por um arquivo de textura (ignoramos rugosidade, especularidade, etc).
+
+    Em uma engine real, dados de material (textura) e de uso (ebo, indices) seriam separados.
+    Por simplicidade, unimos os dois conceitos, dado que nosso projeto não usa o mesmo material em modelos diferentes.
     """
     def __init__(self, texture_path: str):
         self.texture_id = None
@@ -39,7 +40,10 @@ class Material:
         )
 
     def setup_ebo(self, indices: np.ndarray) -> None:
-        "Remember to bind the vao before calling this."
+        """
+        Deve ser chamado após um VAO (Vertex Array Object) ter sido vinculado.
+        Configura o Element Buffer Object (EBO) com os índices que serão usados para renderizar o modelo.
+        """
         indices = np.array(indices, dtype=np.uint32)
         self.ebo = glGenBuffers(1)
         self.indices = indices
@@ -47,16 +51,27 @@ class Material:
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
     def render(self):
-        "Remember to bind the vao before calling this."
+        """
+        Deve ser chamado após um VAO (Vertex Array Object) ter sido vinculado.
+        Renderiza o modelo usando o EBO configurado.
+        """
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
 
     def destroy(self):
         glDeleteTextures([self.texture_id])
+        if self.ebo is not None:
+            glDeleteBuffers(1, [self.ebo])
 
     @staticmethod
     def try_load_material(file_name: str, root_path: str):
+        
+        """
+        Tenta carregar um material a partir de uma textura. 
+        Tenta primeiro em 'root_path/textures/file_name', depois em 'root_path/file_name'.
+        Se não conseguir, lança uma exceção.
+        """
         file_path = os.path.join(root_path, TEXTURE_SUB_FOLDER, file_name)
         if os.path.isfile(file_path):
             return Material(file_path)
@@ -68,8 +83,12 @@ class Material:
         raise Exception(f"Could not find texture {file_name} in {root_path}")
 
 class MaterialLibrary:
+    """
+    Classe que representa uma biblioteca de materiais, indexados por nome.
+    É a versão em memória de um arquivo .mtl
+    """
     def __init__(self):
-        self.materials = {}
+        self.materials: dict[str, Material] = {}
 
     def load_mtl(self, mtl_path: str) -> None:
         if not os.path.exists(mtl_path):
@@ -99,21 +118,17 @@ class MaterialLibrary:
             print(f"Material {current_material_name} has no texture")
             self.materials[current_material_name] = None
 
-    def get(self, material_name: str) -> Material:
-        return self.materials[material_name]
-
     def get_or_default(self, material_name: str) -> Material:
+        """
+        Retorna o material com o nome fornecido, ou o material padrão se ele não existir.
+        Se nem o material nem o padrão existirem, lança uma exceção.
+        """
         if material_name in self.materials and self.materials[material_name] is not None:
             return self.materials[material_name]
         
         if None in self.materials:
             print(f"Material {material_name} does not exist, using default material")
             return self.materials[None]
-        
-        print("Materials:")
-        for material_name, material in self.materials.items():
-            print(f"- {material_name}: {material}")
-        
         
         raise Exception(f"Material {material_name} does not exist and there is no default material")
     

@@ -40,7 +40,7 @@ def main():
         # Atualiza inputs
         camera.update(input, delta_time)
         scene_input.update(delta_time)
-        input.update()
+        input.clear_deltas()
         
         renderer.set_camera(camera)
         scene.skybox.set_pos(camera.position)
