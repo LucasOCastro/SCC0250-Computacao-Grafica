@@ -1,20 +1,45 @@
 # Computação Gráfica - ICMC USP - 2025/1
 
-![python3 10_1ovh9u4GNn-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/844e6592-5c5e-4c6a-a713-6855da63b16b)
-
-# Alunos
-
-
+## Alunos:
  Gustavo Bhering Grande - 12542780
  
  Lucas Oliveira Castro - 13695059
 
-
-# Para executar:
+## Para executar:
 
 python main.py
 
-# Controles
+# Entrega 2 (13/05)
+![saponomo1-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/108dd3b9-0849-49a0-8d20-d74d85ec3b8d)
+
+## Controles
+### Câmera
+Mover o Mouse - Rotaciona a câmera
+
+Scroll Wheel - Controla o zoom
+
+WASD - Translada a câmera
+
+Espaço - Translada para cima
+
+Left Ctrl - Translada para baixo
+
+Left Shift - Movimentação Rápida da Câmera
+
+### Cena
+P - Visualizar polígonos
+
+J - Faz os gnomos pularem
+
+v ^ - Escala o sapo
+
+C - Roda a colher no caldeirão
+
+
+# Entrega 1 (08/04)
+![python3 10_1ovh9u4GNn-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/844e6592-5c5e-4c6a-a713-6855da63b16b)
+
+## Controles
 
 WASD - Translada a Vitória Régia
 
