@@ -37,7 +37,7 @@ class Cauldron(Object):
         
         particle_meshes = ["particles/skull1/Skull.obj"]
         self.particle_system = ParticleSystem(particle_meshes, radius=1.5)
-        self.particle_system.set_pos([0, 4.5, 0])
+        self.particle_system.set_pos([0, 5, 0])
         self.children.append(self.particle_system)
     
     def update(self, input: Input, delta_time: float) -> None:
