@@ -62,7 +62,8 @@ class Mesh:
                     continue
                 ### recuperando materiais
                 if values[0] == 'mtllib':
-                    mtl_path = os.path.join(self.asset_sub_folder, values[1])
+                    path = " ".join(values[1:])
+                    mtl_path = os.path.join(self.asset_sub_folder, path)
                     self.material_library.load_mtl(mtl_path)
                 elif values[0] == 'usemtl':
                     current_mat = values[1]

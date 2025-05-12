@@ -73,7 +73,7 @@ class MaterialLibrary:
 
     def load_mtl(self, mtl_path: str) -> None:
         if not os.path.exists(mtl_path):
-            print(f"Material file {mtl_path} does not exist")
+            print(f"Mtl file {mtl_path} does not exist")
             return
 
         folder = os.path.dirname(mtl_path)
