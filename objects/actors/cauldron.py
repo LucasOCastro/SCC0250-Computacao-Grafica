@@ -15,9 +15,9 @@ class Cauldron(Object):
     MOVING = 2
     MOVE_TO_REST = 3
 
-    def __init__(self):
+    def __init__(self, transition_key = glfw.KEY_C) -> None:
         super().__init__()
-
+        self.transition_key = transition_key
         self.t = 0 # tempo decorrido geral
         self.state_t = 0 # tempo decorrido no estado atual
 
@@ -59,7 +59,7 @@ class Cauldron(Object):
 
     def _rest_state(self, input: Input):
         """Colher parada flutuando acima do caldeirão. H -> transição para MOVING"""
-        if input.is_key_held(glfw.KEY_H):
+        if input.is_key_held(self.transition_key):
             self.state = Cauldron.REST_TO_MOVE
             self.state_t = 0
             return
@@ -86,7 +86,7 @@ class Cauldron(Object):
     def _move_state(self, input: Input):
         """Colher em movimento dentro do caldeirão. H -> transição para RESTING."""
         self.particle_system.active = True
-        if input.is_key_held(glfw.KEY_H):
+        if input.is_key_held(self.transition_key):
             self.state = Cauldron.MOVE_TO_REST
             self.state_t = 0
             self.particle_system.active = False
