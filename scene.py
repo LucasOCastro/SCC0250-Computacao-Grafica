@@ -10,7 +10,7 @@ from objects.actors.Frog import FrogCrowned
 class Scene:
     def __init__(self, renderer: Renderer):
         self.renderer = renderer
-        self.gen_objects();
+        self.gen_objects()
 
     def gen_objects(self):
         # Container principal que segura todos os objetos da cena

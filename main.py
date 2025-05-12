@@ -9,6 +9,7 @@ from sceneinput import SceneInput
 from renderer import Renderer
 from camera import Camera
 from scene import Scene
+from mesh import loaded_meshes
 
 def main():
     # Cria a janela configurada
@@ -37,15 +38,17 @@ def main():
         delta_time = window.delta_time
 
         # Atualiza inputs
-        input.update()
         camera.update(input, delta_time)
         scene_input.update(delta_time)
+        input.update()
         
         renderer.set_camera(camera)
         scene.skybox.set_pos(camera.position)
         scene.render_scene()
         window.post_render()
 
+    for mesh in loaded_meshes.values():
+        mesh.destroy()
     scene.container.destroy()
     window.destroy()
 
