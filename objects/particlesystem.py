@@ -1,4 +1,5 @@
 from objects.object import Object
+from objects.meshobject import MeshObject
 import numpy as np
 
 class Particle:
@@ -31,12 +32,11 @@ class Particle:
 
 
 class ParticleSystem(Object):
-    def __init__(self, particle_objs: list[Object], radius: float = 1, time_to_spawn: float = 0.5, height_range: tuple[float, float] = [1, 2], lifetime__range: tuple[float, float] = [1, 2], scale_range: tuple[float, float] = [1, 2]):
+    def __init__(self, meshes: list[str], radius: float = 1, time_to_spawn: float = 0.5, height_range: tuple[float, float] = [1, 2], lifetime__range: tuple[float, float] = [1, 2], scale_range: tuple[float, float] = [1, 2]):
         super().__init__()
 
+        self.meshes = meshes
         self.active_particles: list[Particle] = []
-        self.inactive_particles: list[MeshObject] = particle_objs
-        self.children.extend(particle_objs) 
 
         self.t = 0
         self.radius = radius
@@ -45,29 +45,21 @@ class ParticleSystem(Object):
         self.lifetime_range = lifetime__range
         self.scale_range = scale_range
         
-        self.active = True
-
-        for i in range(10):
-            self._spawn_particle(0)
+        self.active = False
 
     def update(self, input, delta_time: float):
         self.t += delta_time
 
-        if self.active and self.t > self.time_to_spawn and self.inactive_particles:
+        if self.active and self.t > self.time_to_spawn:
             self.t = 0
-            rand_index = np.random.randint(0, len(self.inactive_particles))
-            self._spawn_particle(rand_index)
+            rand_mesh = np.random.choice(self.meshes)
+            self._spawn_particle(rand_mesh)
 
         for particle in self.active_particles:
             if particle.update(delta_time):
-                particle.obj.set_scale_single(0)
-                self.active_particles.remove(particle)
-                self.inactive_particles.append(particle.obj)
+                self._despawn_particle(particle)
 
-    def _spawn_particle(self, index: int):
-        particle = self.inactive_particles[index]
-        self.inactive_particles.remove(particle)
-
+    def _spawn_particle(self, mesh: str):
         start_pos = self._rand_pos_in_circle()
         y_off = np.random.uniform(self.height_range[0], self.height_range[1])
         end_pos = start_pos + np.array([0, y_off, 0], dtype=np.float32)
@@ -80,8 +72,15 @@ class ParticleSystem(Object):
 
         lifetime = np.random.uniform(self.lifetime_range[0], self.lifetime_range[1])
 
-        particle = Particle(particle, start_pos, end_pos, start_scale, end_scale, start_rot, end_rot, lifetime)
+        obj = MeshObject(mesh)
+        particle = Particle(obj, start_pos, end_pos, start_scale, end_scale, start_rot, end_rot, lifetime)
         self.active_particles.append(particle)
+        self.children.append(obj)
+
+    def _despawn_particle(self, particle: Particle):
+        self.active_particles.remove(particle)
+        self.children.remove(particle.obj)
+        particle.obj.destroy()
         
 
     def _rand_pos_in_circle(self):

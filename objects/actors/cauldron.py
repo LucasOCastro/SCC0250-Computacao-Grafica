@@ -35,10 +35,9 @@ class Cauldron(Object):
         self.spoon.set_pos(self.spoon_move_center)
         self.children.append(self.spoon)
         
-        particles = [MeshObject("skulls/skull1/Skull.obj") for _ in range(20)]
-        self.particle_system = ParticleSystem(particles)
-        self.particle_system.set_pos([0, 5, 0])
-        self.particle_system.active = False
+        particle_meshes = ["particles/skull1/Skull.obj"]
+        self.particle_system = ParticleSystem(particle_meshes, radius=1.5)
+        self.particle_system.set_pos([0, 4.5, 0])
         self.children.append(self.particle_system)
     
     def update(self, input: Input, delta_time: float) -> None:
