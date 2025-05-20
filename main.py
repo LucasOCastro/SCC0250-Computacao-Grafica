@@ -30,9 +30,6 @@ def main():
     input = Input(window)
     scene_input = SceneInput(scene, renderer, input)
 
-    # sem isso, skybox fica com arestas brancas
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time

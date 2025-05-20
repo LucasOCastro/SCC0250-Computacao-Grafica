@@ -12,20 +12,18 @@ class Material:
     Em uma engine real, dados de material (textura) e de uso (ebo, indices) seriam separados.
     Por simplicidade, unimos os dois conceitos, dado que nosso projeto não usa o mesmo material em modelos diferentes.
     """
-    def __init__(self, texture_path: str):
+    def __init__(self, texture_path: str, wrap_type = GL_REPEAT, filter_type = GL_LINEAR):
         self.texture_id = None
         self.ebo = None
         self.indices = None
-        self._load_texture(texture_path)
+        self._load_texture(texture_path, wrap_type, filter_type)
 
-    def _load_texture(self, texture_path: str) -> None:
+    def _load_texture(self, texture_path: str, wrap_type, filter_type) -> None:
         self.texture_id = glGenTextures(1)
 
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        self.set_wrap_mode(wrap_type)
+        self.set_filter_mode(filter_type)
 
         img = Image.open(texture_path).convert("RGBA")
         img_width, img_height = img.size
@@ -38,6 +36,16 @@ class Material:
             GL_UNSIGNED_BYTE,
             image_data
         )
+
+    def set_wrap_mode(self, wrap_type):
+        glBindTexture(GL_TEXTURE_2D, self.texture_id)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_type)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_type)
+
+    def set_filter_mode(self, filter_type):
+        glBindTexture(GL_TEXTURE_2D, self.texture_id)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_type)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_type)
 
     def setup_ebo(self, indices: np.ndarray) -> None:
         """
@@ -131,6 +139,9 @@ class MaterialLibrary:
             return self.materials[None]
         
         raise Exception(f"Material {material_name} does not exist and there is no default material")
+    
+    def get_default(self) -> Material:
+        return self.materials[None]
     
     def set(self, material_name: str, material: Material):
         self.materials[material_name] = material   

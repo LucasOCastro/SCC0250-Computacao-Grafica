@@ -1,252 +1,255 @@
-# Blender 4.4.3 MTL File: 'None'
-# www.blender.org
+# Blender MTL File: 'None'
+# Material Count: 23
 
-newmtl Bt_forest01_bigtree_branch_mat
+newmtl Bt_forest01_bigtree_branch_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_bigtree_branch.png
+map_Kd Bt_forest01_bigtree_branch.png
 
-newmtl Bt_forest01_bigtree_miki2_mat
+newmtl Bt_forest01_bigtree_miki2_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_bigtree_miki2.png
+map_Kd Bt_forest01_bigtree_miki2.png
 
-newmtl Bt_forest01_bigtree_miki_mat
+newmtl Bt_forest01_bigtree_miki_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_bigtree_miki.png
+map_Kd Bt_forest01_bigtree_miki.png
 
-newmtl Bt_forest01_glass_mat
+newmtl Bt_forest01_glass_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_glass.png
+map_Kd Bt_forest01_glass.png
 
-newmtl Bt_forest01_ground03_mat
+newmtl Bt_forest01_ground03_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_ground03.png
+map_Kd Bt_forest01_ground03.png
 
-newmtl Bt_forest01_ground04_mat
+newmtl Bt_forest01_ground04_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_ground04.png
+map_Kd Bt_forest01_ground04.png
 
-newmtl Bt_forest01_ground_mat
+newmtl Bt_forest01_ground_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_ground.png
+map_Kd Bt_forest01_ground.png
 
-newmtl Bt_forest01_leaf_mat
+newmtl Bt_forest01_leaf_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_leaf.png
+map_Kd Bt_forest01_leaf.png
 
-newmtl Bt_forest01_rock01_tex_mat
+newmtl Bt_forest01_rock01_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_rock01_tex.png
+map_Kd Bt_forest01_rock01_tex.png
 
-newmtl Bt_forest01_rock02_tex_mat
+newmtl Bt_forest01_rock02_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_rock02_tex.png
+map_Kd Bt_forest01_rock02_tex.png
 
-newmtl Bt_forest01_rock03_tex_mat
+newmtl Bt_forest01_rock03_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_rock03_tex.png
+map_Kd Bt_forest01_rock03_tex.png
 
-newmtl Bt_forest01_sky_tex_mat
+newmtl Bt_forest01_splash_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_sky_tex.png
+map_Kd Bt_forest01_splash_tex.png
 
-newmtl Bt_forest01_splash_tex_mat
+newmtl Bt_forest01_tree01_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_splash_tex.png
+map_Kd Bt_forest01_tree01_tex.png
 
-newmtl Bt_forest01_tree01_tex_mat
+newmtl Bt_forest01_tree02_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_tree01_tex.png
+map_Kd Bt_forest01_tree02_tex.png
 
-newmtl Bt_forest01_tree02_tex_mat
+newmtl Bt_forest01_tree03_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_tree02_tex.png
+map_Kd Bt_forest01_tree03_tex.png
 
-newmtl Bt_forest01_tree03_tex_mat
+newmtl Bt_forest01_water01_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_tree03_tex.png
+map_Kd Bt_forest01_water01_tex.png
 
-newmtl Bt_forest01_water01_tex_mat
+newmtl Bt_forest01_water02_tex_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_water01_tex.png
+map_Kd Bt_forest01_water02_tex.png
 
-newmtl Bt_forest01_water02_tex_mat
+newmtl bt_forest01_gras02_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/Bt_forest01_water02_tex.png
+map_Kd bt_forest01_gras02.png
 
-newmtl bt_forest01_enkei_mat
+newmtl bt_forest01_ground01_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/bt_forest01_enkei.png
+map_Kd bt_forest01_ground01.png
 
-newmtl bt_forest01_gras02_mat
+newmtl bt_forest01_ground02_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/bt_forest01_gras02.png
+map_Kd bt_forest01_ground02.png
 
-newmtl bt_forest01_ground01_mat
+newmtl bt_forest01_rock00_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/bt_forest01_ground01.png
+map_Kd bt_forest01_rock00.png
 
-newmtl bt_forest01_ground02_mat
+newmtl gras_02_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/bt_forest01_ground02.png
+map_Kd gras_02.png
 
-newmtl bt_forest01_rock00_mat
+newmtl gras_03_mat.001
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/bt_forest01_rock00.png
-
-newmtl gras_02_mat
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/gras_02.png
-
-newmtl gras_03_mat
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd D:/Faculdade/CompGraf/T1/assets/scenario/gras_03.png
+map_Kd gras_03.png

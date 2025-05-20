@@ -18,6 +18,7 @@ class Scene:
 
         self.skybox = MeshObject("skybox/skybox.obj", "skybox.png")
         self.skybox.set_scale_single(1000)
+        self.skybox.mesh.material_library.get_default().set_filter_mode(GL_NEAREST)
         self.container.children.append(self.skybox)
         
         self.scenario = MeshObject("scenario/scenario.obj")
