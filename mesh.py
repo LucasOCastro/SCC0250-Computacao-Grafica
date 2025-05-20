@@ -54,6 +54,7 @@ class Mesh:
     def _load_obj(self, obj_path: str):
         raw_vertex_list = []
         raw_uv_list = []
+        raw_vn_list = []
         
         vertices = []
         material_indices = {}
@@ -90,30 +91,36 @@ class Mesh:
 
                         vertex_idx = int(parts[0])
                         uv_idx = int(parts[1])
+                        vn_idx = int(parts[2])
 
                         # índices negativos são do fim da lista
                         if vertex_idx < 0: 
                             vertex_idx += len(raw_vertex_list) + 1
                         if uv_idx < 0:
                             uv_idx += len(raw_uv_list) + 1
+                        if vn_idx < 0:
+                            vn_idx += len(raw_vn_list) + 1
 
                         # prepara para armazenar os indices no material atual
                         if current_mat not in material_indices:
                             material_indices[current_mat] = []
                         indices = material_indices[current_mat]
 
-                        # mantemos unicidade dos pares vertice/uv
-                        key = (vertex_idx, uv_idx)
-                        if key in unique_vertex_map:
+                        # mantemos unicidade das tuplas vertice/uv/vn
+                        key = (vertex_idx, uv_idx, vn_idx)
+                        # se a tupla ja foi armazenada, usa o mesmo indice
+                        if key in unique_vertex_map: 
                             indices.append(unique_vertex_map[key])
+                        # caso contrário, armazena a tupla e o indice
                         else:
                             vertex = raw_vertex_list[int(vertex_idx) - 1]
                             uv = raw_uv_list[int(uv_idx) - 1]
+                            vn = raw_vn_list[int(vn_idx) - 1]
 
                             idx = len(unique_vertex_map)
                             unique_vertex_map[key] = idx
 
-                            vertices.extend([*vertex, *uv])
+                            vertices.extend([*vertex, *uv, *vn])
                             indices.append(idx)
 
         # Define o contexto como sendo o VAO desse objeto
@@ -130,13 +137,16 @@ class Mesh:
             material.setup_ebo(indices)
 
         # Define o layout dos atributos de vértice no shader
-        stride = 5 * self.vertices.itemsize  # 3 (posição) + 2 (uv) = 5
+        stride = 8 * self.vertices.itemsize  # 3 (posição) + 2 (uv) + 3 (normais) = 8
 
         glEnableVertexAttribArray(0)  # Posição
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(0))
 
         glEnableVertexAttribArray(1)  # UV
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(3 * self.vertices.itemsize))
+
+        glEnableVertexAttribArray(2)  # Normais
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, ctypes.c_void_p(5 * self.vertices.itemsize))
         
         # Limpa o contexto do VAO
         glBindVertexArray(0)
