@@ -92,7 +92,7 @@ class Object:
             child.update(*args)
     
     # TODO cache world matrices and lit/unlit materials
-    def collect(self, parent_transformation_matrix: np.ndarray, action: callable):1
+    def collect(self, parent_transformation_matrix: np.ndarray, action: callable):
         world_transformation_matrix = np.dot(parent_transformation_matrix, self.model_matrix)
         for child in self.children:
             child.collect(world_transformation_matrix, action)
