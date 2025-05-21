@@ -12,10 +12,14 @@ class Material:
     Em uma engine real, dados de material (textura) e de uso (ebo, indices) seriam separados.
     Por simplicidade, unimos os dois conceitos, dado que nosso projeto não usa o mesmo material em modelos diferentes.
     """
-    def __init__(self, texture_path: str, wrap_type = GL_REPEAT, filter_type = GL_LINEAR):
+    def __init__(self, texture_path: str, 
+                 light_parameters: dict[str, np.ndarray | float] = {},
+                 wrap_type = GL_REPEAT,
+                 filter_type = GL_LINEAR):
         self.texture_id = None
         self.ebo = None
         self.indices = None
+        self.light_parameters = light_parameters
         self._load_texture(texture_path, wrap_type, filter_type)
 
     def _load_texture(self, texture_path: str, wrap_type, filter_type) -> None:
@@ -36,6 +40,10 @@ class Material:
             GL_UNSIGNED_BYTE,
             image_data
         )
+    
+    @property
+    def is_lit(self) -> bool:
+        return len(self.light_parameters) > 0
 
     def set_wrap_mode(self, wrap_type):
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
@@ -58,22 +66,13 @@ class Material:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
-    def render(self):
-        """
-        Deve ser chamado após um VAO (Vertex Array Object) ter sido vinculado.
-        Renderiza o modelo usando o EBO configurado.
-        """
-        glBindTexture(GL_TEXTURE_2D, self.texture_id)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
-
     def destroy(self):
         glDeleteTextures([self.texture_id])
         if self.ebo is not None:
             glDeleteBuffers(1, [self.ebo])
 
     @staticmethod
-    def try_load_material(file_name: str, root_path: str):
+    def try_load_material(file_name: str, root_path: str, light_parameters: dict[str, np.ndarray | float] = {}):
         
         """
         Tenta carregar um material a partir de uma textura. 
@@ -82,11 +81,11 @@ class Material:
         """
         file_path = os.path.join(root_path, TEXTURE_SUB_FOLDER, file_name)
         if os.path.isfile(file_path):
-            return Material(file_path)
+            return Material(file_path, light_parameters=light_parameters)
         
         file_path = os.path.join(root_path, file_name)
         if os.path.isfile(file_path):
-            return Material(file_path)
+            return Material(file_path, light_parameters=light_parameters)
         
         raise Exception(f"Could not find texture {file_name} in {root_path}")
 
@@ -105,6 +104,7 @@ class MaterialLibrary:
 
         folder = os.path.dirname(mtl_path)
         current_material_name = None
+        current_light_parameters: dict[str, np.ndarray | float] = {}
         
         with open(mtl_path, "r") as file:
             for line in file:
@@ -117,10 +117,24 @@ class MaterialLibrary:
                         print(f"Material {current_material_name} has no texture")
                         self.materials[current_material_name] = None
                     current_material_name = values[1]
-                elif values[0] == 'map_Kd':
-                    file_name = os.path.basename(values[1])
-                    self.materials[current_material_name] = Material.try_load_material(file_name, folder)
+                    current_light_parameters = {}
+                elif values[0] == 'map_Kd': # albedo
+                    file_name = os.path.basename(values[1])                    
+                    new_material = Material.try_load_material(file_name, folder, light_parameters=current_light_parameters)
+                    self.materials[current_material_name] = new_material
+
                     current_material_name = None
+                    current_light_parameters = {}
+                else: # parametros de luz (ks, kd, etc)
+                    try:
+                        params = values[1].split()
+                        name = values[0].strip().lower()
+                        if len(params) == 1:
+                            current_light_parameters[name] = float(params[0])
+                        else:
+                            current_light_parameters[name] = np.array([float(param) for param in params], dtype=np.float32)
+                    except ValueError:
+                        pass
 
         if current_material_name is not None:
             print(f"Material {current_material_name} has no texture")

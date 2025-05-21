@@ -1,6 +1,5 @@
 import numpy as np
 from OpenGL.GL import *
-from renderer import Renderer
 from objects.object import Object
 from objects.meshobject import MeshObject
 from objects.actors.cauldron import Cauldron
@@ -8,8 +7,7 @@ from objects.actors.Gnome import Gnome
 from objects.actors.Frog import FrogCrowned
 
 class Scene:
-    def __init__(self, renderer: Renderer):
-        self.renderer = renderer
+    def __init__(self):
         self.gen_objects()
 
     def gen_objects(self):
@@ -66,6 +64,3 @@ class Scene:
         self.gnomes = gnomes
         self.container.children.extend(self.gnomes)
 
-    
-    def render_scene(self) -> None:
-        self.container.render(np.identity(4, dtype=np.float32), self.renderer)

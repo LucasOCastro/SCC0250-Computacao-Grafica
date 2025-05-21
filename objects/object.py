@@ -2,7 +2,6 @@ from OpenGL.GL import *
 import numpy as np
 from typing import List
 from matrixmath import *
-from renderer import Renderer
 
 class Object:
     def __init__(self):
@@ -82,12 +81,6 @@ class Object:
         """Converte ponto do espaço local do objeto para o mundo"""
         return transform_vector(point, self.model_matrix)
 
-    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
-        """Renderiza o objeto e seus filhos com base na matriz do pai"""
-        world_mat = np.dot(parent_transformation_matrix, self.model_matrix)
-        for child in self.children:
-            child.render(world_mat, renderer)
-
     def destroy(self):
         """Destrói o objeto e seus filhos"""
         for child in self.children:
@@ -97,3 +90,10 @@ class Object:
         """Atualiza o objeto e seus filhos"""
         for child in self.children:
             child.update(*args)
+    
+    # TODO cache world matrices and lit/unlit materials
+    def collect(self, parent_transformation_matrix: np.ndarray, action: callable):1
+        world_transformation_matrix = np.dot(parent_transformation_matrix, self.model_matrix)
+        for child in self.children:
+            child.collect(world_transformation_matrix, action)
+        action(self, world_transformation_matrix)

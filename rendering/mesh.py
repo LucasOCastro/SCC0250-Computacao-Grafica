@@ -1,7 +1,6 @@
 import numpy as np
 from OpenGL.GL import *
-from materials import MaterialLibrary, Material
-from renderer import Renderer
+from rendering.materials import MaterialLibrary, Material
 import os
 
 ASSETS_SUB_FOLDER = 'assets'
@@ -34,17 +33,6 @@ class Mesh:
         if error != GL_NO_ERROR:
             print(error)
             raise Exception("OpenGL error when creating object")
-
-    def render(self):
-        """
-        Renderiza a malha vinculando seu Vertex Array Object (VAO) e iterando por todos os materiais para renderizá-los.
-        Antes de chamar este método, é necessário configurar os valores na shader, como a matriz de transformação.
-        Após a renderização, o VAO é desvinculado.
-        """
-        glBindVertexArray(self.vao)
-        for material in self.material_library.materials.values():
-            material.render()
-        glBindVertexArray(0)
 
     def destroy(self):
         glDeleteVertexArrays(1, [self.vao])
@@ -79,6 +67,9 @@ class Mesh:
                 ### recuperando coordenadas de textura
                 elif values[0] == 'vt':
                     raw_uv_list.append(values[1:3])
+                ### recuperando normais
+                elif values[0] == 'vn':
+                    raw_vn_list.append(values[1:4])
                 ### recuperando faces 
                 elif values[0] == 'f':
                     face = self._circular_sliding_window_of_three(values[1:])
@@ -87,18 +78,19 @@ class Mesh:
                         # nesse trabalho não usaremos normais (vn)
                         parts = v.split('/')
                         if len(parts) == 1:
-                            raise Exception("Face sem coordenada de textura")
+                            print(f"Face sem coordenada de textura em {obj_path}")
+                            continue
 
                         vertex_idx = int(parts[0])
                         uv_idx = int(parts[1])
-                        vn_idx = int(parts[2])
+                        vn_idx = int(parts[2]) if len(parts) > 2 else None
 
                         # índices negativos são do fim da lista
                         if vertex_idx < 0: 
                             vertex_idx += len(raw_vertex_list) + 1
                         if uv_idx < 0:
                             uv_idx += len(raw_uv_list) + 1
-                        if vn_idx < 0:
+                        if vn_idx is not None and vn_idx < 0:
                             vn_idx += len(raw_vn_list) + 1
 
                         # prepara para armazenar os indices no material atual
@@ -115,7 +107,7 @@ class Mesh:
                         else:
                             vertex = raw_vertex_list[int(vertex_idx) - 1]
                             uv = raw_uv_list[int(uv_idx) - 1]
-                            vn = raw_vn_list[int(vn_idx) - 1]
+                            vn = raw_vn_list[int(vn_idx) - 1] if vn_idx is not None else [0.0, 0.0, 0.0]
 
                             idx = len(unique_vertex_map)
                             unique_vertex_map[key] = idx
