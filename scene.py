@@ -45,13 +45,13 @@ class Scene:
         self.frog.set_pos(frog_pos)
         self.container.add_child(self.frog)
         
-        self.frog_house = MeshObject("frog_house/frog_house.obj", "frog_house.png")
+        self.frog_house = MeshObject("frog_house/frog_house.obj")
         self.frog_house.set_pos(frog_pos + [0, 0, -30])
         self.frog_house.set_scale_single(8)
         self.container.add_child(self.frog_house)
 
         GNOMES_NUM = 7
-        gnomes = [Gnome("gnomes/gnome1/gnome.obj", "gnome.png") for _ in range(GNOMES_NUM)]
+        gnomes = [Gnome("gnomes/gnome1/gnome.obj") for _ in range(GNOMES_NUM)]
         angle_step = 2*np.pi / GNOMES_NUM
         for i, gnome in enumerate(gnomes):
             #posiciona os gnomos em um circulo

@@ -11,12 +11,12 @@ class FrogCrowned(object.Object):
         self.min_size = min_size
         self.objects_scale = 0.5
         
-        self.frog = meshobject.MeshObject("frog/frog.obj", "frog.jpg")
+        self.frog = meshobject.MeshObject("frog/frog.obj")
         self.frog.set_rot_deg([-90, 0, 0])
         self.frog.set_scale_single(2)
         self.add_child(self.frog)
         
-        self.crown = meshobject.MeshObject("crown/crown.obj", "crown.png")
+        self.crown = meshobject.MeshObject("crown/crown.obj")
         self.crown.set_rot_deg([-30, 0, 0])
         self.crown.set_scale_single(2)
         self.crown.set_pos([0, 6, 4])

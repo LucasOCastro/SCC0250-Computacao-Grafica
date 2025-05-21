@@ -5,8 +5,8 @@ import numpy as np
 
 
 class Gnome(meshobject.MeshObject):
-    def __init__(self, path: str, texture_path: str, gravity = -1, ground_y = 0.0, jump_key = glfw.KEY_J, jump_max = 15) -> None:
-        super().__init__(path, texture_path)
+    def __init__(self, path: str, gravity = -1, ground_y = 0.0, jump_key = glfw.KEY_J, jump_max = 15) -> None:
+        super().__init__(path)
         self.velocity = np.zeros(3, dtype=np.float32)
         self.on_ground = True
         self.ground_y = ground_y
