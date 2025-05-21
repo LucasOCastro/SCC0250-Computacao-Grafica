@@ -86,7 +86,7 @@ class Renderer:
             lit_materials: list[Material] = []
             unlit_materials: list[Material] = []
             for material in mesh.material_library.materials.values():
-                if material.is_lit:
+                if material.is_lit and not obj.is_force_unlit:
                     lit_materials.append(material)
                 else:
                     unlit_materials.append(material)
