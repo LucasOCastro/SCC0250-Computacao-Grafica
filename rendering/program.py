@@ -65,6 +65,10 @@ class Program:
         value = value.reshape(1,16) # Achata a matriz para formato OpenGL
         glUniformMatrix4fv(glGetUniformLocation(self.program, name), 1, GL_TRUE, value)
 
+    def set_int(self, name: str, value: int) -> None:
+        self.use()
+        glUniform1i(glGetUniformLocation(self.program, name), value)
+
     def set_float(self, name: str, value: float) -> None:
         self.use()
         glUniform1f(glGetUniformLocation(self.program, name), value)
@@ -130,6 +134,7 @@ class LitProgram(Program):
         super().render_draw_call(draw_call)
     
     def _set_light_uniforms(self, lights: list[LightSource]):
+        self.set_int("numLights", len(lights))
         for i in range(len(lights)):
             light = lights[i]
             self.set_vec3(f"lights[{i}].position", light.world_position)

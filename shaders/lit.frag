@@ -10,6 +10,7 @@ struct Light {
 uniform vec3 viewPos; // posicao do observador/camera
 uniform vec3 ambientLightColor;
 uniform Light lights[3]; // luzes
+uniform int numLights;
 // -- Material atual
 uniform sampler2D tex; // textura
 uniform vec3 ka; // coeficiente de reflexao ambiente
@@ -50,7 +51,7 @@ void main(){
 	vec3 norm = normalize(v_normal);
 	vec3 diffuse = vec3(0.0);
 	vec3 specular = vec3(0.0);
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < numLights; i++) {
 		Light light = lights[i];
 		vec3 lightDir = normalize(light.position - v_fragPos);
 		vec3 currDiffuse = calc_diffuse(light.color, lightDir, norm);
