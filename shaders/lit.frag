@@ -33,8 +33,11 @@ vec3 calc_diffuse(vec3 color, vec3 lightDir, vec3 norm) {
 }
 
 vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
-	vec3 halfDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflect
-    float spec = pow(max(dot(norm, halfDir), 0.0), ns);
+	// vec3 specDir = normalize(reflect(-lightDir, norm)); // Phong usa reflection
+	vec3 specDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflection
+    float NdotH = max(dot(norm, specDir), 0.0);
+    if (NdotH <= 0.0) return vec3(0.0); // evita pow(0, ns)
+    float spec = pow(NdotH, ns);
     return ks * spec * color;
 }
 
@@ -46,7 +49,7 @@ void main(){
 	vec3 ambient = ka * ambientLightColor;
 
 	// calculando reflexao difusa e especular
-	vec3 viewDir = normalize(viewPos - v_fragPos); // direcao do observador/camera
+	vec3 viewDir = normalize(viewPos - v_fragPos);
 	vec3 norm = normalize(v_normal);
 	vec3 diffuse = vec3(0.0);
 	vec3 specular = vec3(0.0);
@@ -54,14 +57,11 @@ void main(){
 		if (i >= numLights) break;
 		Light light = lights[i];
 		vec3 lightDir = normalize(light.position - v_fragPos);
-		vec3 currDiffuse = calc_diffuse(light.color, lightDir, norm);
-		vec3 currSpecular = calc_specular(light.color, viewDir, lightDir, norm);
 
-		diffuse += currDiffuse;
-		specular += currSpecular;
+		diffuse += calc_diffuse(light.color, lightDir, norm);
+		specular += calc_specular(light.color, viewDir, lightDir, norm);
 	};
 	
 	// aplicando o modelo de iluminacao
-	vec4 result = vec4((ambient + diffuse + specular), 1.0) * texture; // aplica iluminacao
-	fragColor = result;
+	fragColor = vec4((ambient + diffuse + specular), 1.0) * texture;
 }
