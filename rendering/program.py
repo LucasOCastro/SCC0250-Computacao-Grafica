@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 import numpy as np
 from camera import Camera
+from objects.lightsource import LightSource
 from rendering.mesh import Mesh
 from rendering.materials import Material
 from rendering.drawcall import DrawCall
@@ -118,10 +119,21 @@ class LitProgram(Program):
 
     def reset_ambient_color(self):
         self.set_ambient_color(self.default_ambient_color)
+    
 
-    def set_camera_uniforms(self, camera):
+    def set_camera_uniforms(self, camera: Camera):
         super().set_camera_uniforms(camera)
         self.set_vec3("viewPos", camera.position)
+    
+    def render_draw_call(self, draw_call: DrawCall):
+        self._set_light_uniforms(draw_call.lights)
+        super().render_draw_call(draw_call)
+    
+    def _set_light_uniforms(self, lights: list[LightSource]):
+        for i in range(len(lights)):
+            light = lights[i]
+            self.set_vec3(f"lights[{i}].position", light.world_position)
+            self.set_vec3(f"lights[{i}].color", light.color)
 
     def _bind_material(self, material: Material):
         super()._bind_material(material)

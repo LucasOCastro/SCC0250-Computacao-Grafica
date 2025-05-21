@@ -3,6 +3,7 @@ import numpy as np
 from camera import Camera
 from objects.object import Object
 from objects.meshobject import MeshObject
+from objects.lightsource import LightSource
 from rendering.program import Program, LitProgram
 from rendering.materials import Material
 from rendering.drawcall import DrawCall
@@ -16,6 +17,9 @@ class Renderer:
     def __init__(self, lit_program: LitProgram, unlit_program: Program):
         self.lit_program = lit_program
         self.unlit_program = unlit_program
+        
+        self.max_light_sources = 3
+        self.light_sources: list[LightSource] = []
 
         # Habilita teste de profundidade
         glEnable(GL_DEPTH_TEST)
@@ -36,6 +40,13 @@ class Renderer:
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
+    def register_light_source(self, light_source: LightSource) -> None:
+        if len(self.light_sources) >= self.max_light_sources:
+            print("Excedeu o limite de fontes de luz")
+            return
+        self.light_sources.append(light_source)
+        return
+    
     def render_object_hierarchy(self, root: Object, camera: Camera) -> None:
         """
         Renderiza uma hierarquia de objetos, configurando os programas de shader apropriados e realizando
@@ -55,7 +66,6 @@ class Renderer:
 
         # Renderiza todos os objetos
         for program, draw_calls in program_draw_calls.items():
-            program.use()
             program.set_camera_uniforms(camera)
             for draw_call in draw_calls:
                 program.render_draw_call(draw_call)
@@ -84,9 +94,9 @@ class Renderer:
             # Cria DrawCalls
             world_transformation_matrix = obj.world_transformation_matrix
             if len(lit_materials) > 0:
-                lit_draw_calls.append(DrawCall(mesh, lit_materials, world_transformation_matrix))
+                lit_draw_calls.append(DrawCall(mesh, lit_materials, world_transformation_matrix, self.light_sources))
             if len(unlit_materials) > 0:
-                unlit_draw_calls.append(DrawCall(mesh, unlit_materials, world_transformation_matrix))
+                unlit_draw_calls.append(DrawCall(mesh, unlit_materials, world_transformation_matrix, self.light_sources))
         root.collect(collect_action)
 
         # Mapeia por programa
