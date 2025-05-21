@@ -1,5 +1,6 @@
 #version 450 core
 
+#define MAX_LIGHTS 3
 struct Light {
     vec3 position;
     vec3 color;
@@ -9,7 +10,7 @@ struct Light {
 // -- Camera e luzes
 uniform vec3 viewPos; // posicao do observador/camera
 uniform vec3 ambientLightColor;
-uniform Light lights[3]; // luzes
+uniform Light lights[MAX_LIGHTS]; // luzes
 uniform int numLights;
 // -- Material atual
 uniform sampler2D tex; // textura
@@ -28,16 +29,13 @@ out vec4 fragColor;
 
 vec3 calc_diffuse(vec3 color, vec3 lightDir, vec3 norm) {
 	float diff = max(dot(norm, lightDir), 0.0); // verifica limite angular (entre 0 e 90)
-	vec3 diffuse = kd * diff * color; // iluminacao difusa
-    return diffuse;
+    return kd * diff * color;
 }
 
-vec3 calc_specular(vec3 color, vec3 lightDir, vec3 norm) {
-	vec3 viewDir = normalize(viewPos - v_fragPos); // direcao do observador/camera
-	vec3 reflectDir = normalize(reflect(-lightDir, norm)); // direcao da reflexao
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), ns);
-	vec3 specular = ks * spec * color;
-	return specular;
+vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
+	vec3 halfDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflect
+    float spec = pow(max(dot(norm, halfDir), 0.0), ns);
+    return ks * spec * color;
 }
 
 void main(){
@@ -48,14 +46,16 @@ void main(){
 	vec3 ambient = ka * ambientLightColor;
 
 	// calculando reflexao difusa e especular
+	vec3 viewDir = normalize(viewPos - v_fragPos); // direcao do observador/camera
 	vec3 norm = normalize(v_normal);
 	vec3 diffuse = vec3(0.0);
 	vec3 specular = vec3(0.0);
-	for (int i = 0; i < numLights; i++) {
+	for (int i = 0; i < MAX_LIGHTS; i++) {
+		if (i >= numLights) break;
 		Light light = lights[i];
 		vec3 lightDir = normalize(light.position - v_fragPos);
 		vec3 currDiffuse = calc_diffuse(light.color, lightDir, norm);
-		vec3 currSpecular = calc_specular(light.color, lightDir, norm);
+		vec3 currSpecular = calc_specular(light.color, viewDir, lightDir, norm);
 
 		diffuse += currDiffuse;
 		specular += currSpecular;
