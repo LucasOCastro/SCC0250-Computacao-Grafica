@@ -8,6 +8,8 @@ from input import Input
 from sceneinput import SceneInput
 from rendering.renderer import Renderer
 from rendering.program import Program, LitProgram
+from objects.lightsource import LightSource
+from objects.meshobject import MeshObject
 from camera import Camera
 from scene import Scene
 from rendering.mesh import loaded_meshes
@@ -33,14 +35,30 @@ def main():
     input = Input(window)
     scene_input = SceneInput(scene, renderer, input)
 
+    # TODO testing light, think of alternative to register_light_source
+    scene.test_light = LightSource(np.array([0.8, 0, 0], dtype=np.float32))
+    scene.container.add_child(scene.test_light)
+    light_pos = scene.frog.position + np.array([0, 10, 0], dtype=np.float32)
+    scene.test_light.set_pos(light_pos)
+    light_skull = MeshObject("particles/skull1/Skull.obj")
+    light_skull.is_force_unlit = True
+    light_skull.set_scale_single(20)
+    scene.test_light.add_child(light_skull)
+    renderer.register_light_source(scene.test_light)
+
+    time = 0
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time
+        time += delta_time
 
         # Atualiza inputs
         camera.update(input, delta_time)
         scene_input.update(delta_time)
         input.clear_deltas()
+        x = np.cos(time)
+        y = np.sin(time)
+        scene.test_light.translate(np.array([x, 0, y], dtype=np.float32))
         
         # Renderiza a cena
         scene.skybox.set_pos(camera.position)
