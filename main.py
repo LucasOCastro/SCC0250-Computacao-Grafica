@@ -68,6 +68,7 @@ def main():
     for mesh in loaded_meshes.values():
         mesh.destroy()
     scene.container.destroy()
+    renderer.destroy()
     window.destroy()
 
 

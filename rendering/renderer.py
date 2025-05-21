@@ -104,4 +104,7 @@ class Renderer:
             self.lit_program: lit_draw_calls,
             self.unlit_program: unlit_draw_calls
         }
-        
+    
+    def destroy(self) -> None:
+        self.lit_program.destroy()
+        self.unlit_program.destroy()

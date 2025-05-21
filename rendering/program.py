@@ -100,6 +100,13 @@ class Program:
     def _bind_material(self, material: Material):
         glBindTexture(GL_TEXTURE_2D, material.texture_id)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, material.ebo)
+    
+    def destroy(self):
+        glDetachShader(self.program, self.vertex)
+        glDetachShader(self.program, self.fragment)
+        glDeleteShader(self.vertex)
+        glDeleteShader(self.fragment)
+        glDeleteProgram(self.program)
 
 class LitProgram(Program):
     """
