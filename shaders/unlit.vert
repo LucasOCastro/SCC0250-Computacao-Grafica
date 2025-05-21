@@ -1,4 +1,4 @@
-#version 400
+#version 450 core
 
 // Vem no vértice
 layout(location = 0) in vec3 in_position;
