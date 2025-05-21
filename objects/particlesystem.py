@@ -79,11 +79,11 @@ class ParticleSystem(Object):
         obj = MeshObject(mesh)
         particle = Particle(obj, start_pos, end_pos, start_scale, end_scale, start_rot, end_rot, lifetime)
         self.active_particles.append(particle)
-        self.children.append(obj)
+        self.add_child(obj)
 
     def _despawn_particle(self, particle: Particle):
         self.active_particles.remove(particle)
-        self.children.remove(particle.obj)
+        self.remove_child(particle.obj)
         particle.obj.destroy()
 
     def _rand_pos_in_circle(self):

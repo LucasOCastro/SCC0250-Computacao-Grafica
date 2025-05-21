@@ -34,16 +34,16 @@ class Cauldron(Object):
 
         self.pot = MeshObject("cauldron/cauldron.obj")
         self.pot.set_scale_single(0.6)
-        self.children.append(self.pot)
+        self.add_child(self.pot)
 
         self.spoon = MeshObject("spoon/spoon.obj")
         self.spoon.set_pos(self.spoon_move_center)
-        self.children.append(self.spoon)
+        self.add_child(self.spoon)
         
         particle_meshes = ["particles/skull1/Skull.obj"]
         self.particle_system = ParticleSystem(particle_meshes, radius=1.5)
         self.particle_system.set_pos([0, 5, 0])
-        self.children.append(self.particle_system)
+        self.add_child(self.particle_system)
     
     def update(self, input: Input, delta_time: float) -> None:
         super().update(input, delta_time)

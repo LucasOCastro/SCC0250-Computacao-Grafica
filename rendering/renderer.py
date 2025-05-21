@@ -66,9 +66,9 @@ class Renderer:
         Retorna:
             Um dicionário mapeando programas de shader (`Program`) para listas de DrawCalls correspondentes.
         """
-        lit_draw_calls = []
-        unlit_draw_calls = []
-        def collect_action(obj: Object, world_transformation_matrix: np.ndarray):
+        lit_draw_calls: list[DrawCall] = []
+        unlit_draw_calls: list[DrawCall] = []
+        def collect_action(obj: Object):
             if not isinstance(obj, MeshObject):
                 return
             mesh = obj.mesh
@@ -82,11 +82,12 @@ class Renderer:
                     unlit_materials.append(material)
             
             # Cria DrawCalls
+            world_transformation_matrix = obj.world_transformation_matrix
             if len(lit_materials) > 0:
                 lit_draw_calls.append(DrawCall(mesh, lit_materials, world_transformation_matrix))
             if len(unlit_materials) > 0:
                 unlit_draw_calls.append(DrawCall(mesh, unlit_materials, world_transformation_matrix))
-        root.collect(np.identity(4, dtype=np.float32), collect_action)
+        root.collect(collect_action)
 
         # Mapeia por programa
         return {

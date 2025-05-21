@@ -17,38 +17,38 @@ class Scene:
         self.skybox = MeshObject("skybox/skybox.obj", "skybox.png")
         self.skybox.set_scale_single(1000)
         self.skybox.mesh.material_library.get_default().set_filter_mode(GL_NEAREST)
-        self.container.children.append(self.skybox)
+        self.container.add_child(self.skybox)
         
         self.scenario = MeshObject("scenario/scenario.obj")
         self.scenario.set_scale_single(0.4)
         self.scenario.set_pos([0, 0, -50])
-        self.container.children.append(self.scenario)
+        self.container.add_child(self.scenario)
 
         self.shroom = MeshObject("shroom/shroom_new.obj")
         self.shroom.set_scale_single(5)
         self.shroom.set_rot_deg([0, -100, 0])
         self.shroom.set_pos([0, 0, -50])
-        self.container.children.append(self.shroom)
+        self.container.add_child(self.shroom)
 
         shroom_floor_height = 3.4
         self.witch = MeshObject("witch/witch.obj")
         self.witch.set_scale_single(6)
         self.witch.set_pos([0, shroom_floor_height, -60])
-        self.container.children.append(self.witch)
+        self.container.add_child(self.witch)
         
         self.cauldron = Cauldron()
         self.cauldron.set_pos([0, shroom_floor_height, -52])
-        self.container.children.append(self.cauldron)
+        self.container.add_child(self.cauldron)
 
         frog_pos = np.array([-30, 0, -50])
         self.frog = FrogCrowned()
         self.frog.set_pos(frog_pos)
-        self.container.children.append(self.frog)
+        self.container.add_child(self.frog)
         
         self.frog_house = MeshObject("frog_house/frog_house.obj", "frog_house.png")
         self.frog_house.set_pos(frog_pos + [0, 0, -30])
         self.frog_house.set_scale_single(8)
-        self.container.children.append(self.frog_house)
+        self.container.add_child(self.frog_house)
 
         GNOMES_NUM = 7
         gnomes = [Gnome("gnomes/gnome1/gnome.obj", "gnome.png") for _ in range(GNOMES_NUM)]
@@ -62,5 +62,5 @@ class Scene:
             #seta a rotacao de modo que o gnome fique olhando para o centro do circulo
             gnome.set_rot_rad([0, -angle_step*i - np.pi/2, 0]) 
         self.gnomes = gnomes
-        self.container.children.extend(self.gnomes)
+        self.container.add_children(self.gnomes)
 

@@ -1,5 +1,4 @@
 import objects.meshobject as meshobject
-import numpy as np
 import objects.object as object
 from input import Input
 import glfw
@@ -11,16 +10,21 @@ class FrogCrowned(object.Object):
         self.max_size = max_size
         self.min_size = min_size
         self.objects_scale = 0.5
+        
         self.frog = meshobject.MeshObject("frog/frog.obj", "frog.jpg")
         self.frog.set_rot_deg([-90, 0, 0])
         self.frog.set_scale_single(2)
+        self.add_child(self.frog)
+        
         self.crown = meshobject.MeshObject("crown/crown.obj", "crown.png")
         self.crown.set_rot_deg([-30, 0, 0])
         self.crown.set_scale_single(2)
         self.crown.set_pos([0, 6, 4])
-        self.children.append(self.frog)
-        self.children.append(self.crown)
+        self.add_child(self.crown)
+
         self.set_scale_single(self.objects_scale)
+
+
     def update(self, input : Input, delta_time: float) -> None:
         updated_scale = self.objects_scale
         if input.is_key_held(self.increase_key):
