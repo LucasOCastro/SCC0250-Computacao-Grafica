@@ -7,9 +7,6 @@ from OpenGL.GL import *
 from input import Input
 from sceneinput import SceneInput
 from rendering.renderer import Renderer
-from rendering.program import Program, LitProgram
-from objects.lightsource import LightSource
-from objects.meshobject import MeshObject
 from camera import Camera
 from scene import Scene
 from rendering.mesh import loaded_meshes
@@ -22,10 +19,7 @@ def main():
         return
 
     # Cria o renderer com os shaders
-    ambient_light_color = np.array([1, 1, 1], dtype=np.float32)
-    lit_program = LitProgram("shaders/lit.vert", "shaders/lit.frag", ambient_light_color)
-    unlit_program = Program("shaders/unlit.vert", "shaders/unlit.frag")
-    renderer = Renderer(lit_program, unlit_program)
+    renderer = Renderer("shaders/lit.vert", "shaders/lit.frag")
     camera = Camera(window, 0.1, 20000, 45)
 
     # Cria a cena com todos os objetos
@@ -34,17 +28,6 @@ def main():
     # Cria o input para manipular a cena
     input = Input(window)
     scene_input = SceneInput(scene, renderer, input)
-
-    # TODO testing light, think of alternative to register_light_source
-    scene.test_light = LightSource(np.array([0.8, 0, 0], dtype=np.float32))
-    scene.container.add_child(scene.test_light)
-    light_pos = scene.frog.position + np.array([0, 10, 0], dtype=np.float32)
-    scene.test_light.set_pos(light_pos)
-    light_skull = MeshObject("particles/skull1/Skull.obj")
-    light_skull.is_force_unlit = True
-    light_skull.set_scale_single(20)
-    scene.test_light.add_child(light_skull)
-    renderer.register_light_source(scene.test_light)
 
     time = 0
     while not window.should_close():
@@ -56,13 +39,16 @@ def main():
         camera.update(input, delta_time)
         scene_input.update(delta_time)
         input.clear_deltas()
-        x = np.cos(time)
-        y = np.sin(time)
-        scene.test_light.translate(np.array([x, 0, y], dtype=np.float32))
+        x = np.cos(time * 3) * 0
+        y = np.sin(time * 3) * 50
+        scene.test_light_1.set_pos(np.array([x, 10, y], dtype=np.float32) + scene.frog.position)
+        x = np.cos(time * 3) * 5
+        y = np.sin(time * 3) * 5
+        scene.test_light_2.set_pos(np.array([x, 10, y], dtype=np.float32) + scene.witch.position)
         
         # Renderiza a cena
         scene.skybox.set_pos(camera.position)
-        renderer.render_object_hierarchy(scene.container, camera)
+        scene.render_scene(renderer, camera)
         window.post_render()
 
     for mesh in loaded_meshes.values():
