@@ -2,6 +2,7 @@ from OpenGL.GL import *
 import numpy as np
 from typing import List
 from matrixmath import *
+from rendering.renderer import Renderer
 
 class Object:
     def __init__(self):
@@ -11,8 +12,6 @@ class Object:
         self.rotation = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         self.scale = np.array([1.0, 1.0, 1.0], dtype=np.float32)
         self.parent: 'Object' = None
-
-        self.indices: np.ndarray = []
         self.children: List[Object] = []
 
     def refresh_model_matrix(self):
@@ -69,10 +68,9 @@ class Object:
 
     def translate(self, delta: np.ndarray):
         self.position += delta
-        # TODO propert gradual change
+        # TODO proper gradual change
         self.set_pos(self.position)
         
-
     def set_rot_rad(self, rot: np.ndarray):
         self.rotation = np.array(rot, dtype=np.float32)
         self.refresh_model_matrix()
@@ -87,8 +85,7 @@ class Object:
 
         rotation = np.array(axis) * radian
         self.rotation += rotation
-        rotation_mat = rotation_matrix_all(rotation)
-        # TODO propert gradual change
+        # TODO proper gradual change
         self.set_rot_rad(self.rotation)
 
         if around_self:
@@ -103,14 +100,6 @@ class Object:
     
     def set_scale_single(self, scale: float):
         self.set_scale(np.array([scale, scale, scale], dtype=np.float32))
-
-    def world_to_local(self, point: np.ndarray) -> np.ndarray:
-        """Converte ponto do mundo para o espaço local do objeto"""
-        return transform_vector(point, np.linalg.inv(self.world_transformation_matrix))
-    
-    def local_to_world(self, point: np.ndarray) -> np.ndarray:
-        """Converte ponto do espaço local do objeto para o mundo"""
-        return transform_vector(point, self.world_transformation_matrix)
     
     @property
     def world_position(self):
@@ -126,8 +115,7 @@ class Object:
         for child in self.children:
             child.update(*args)
     
-    # TODO lit/unlit materials
-    def collect(self, action: callable):
+    def render(self, renderer: Renderer):
+        """Renderiza o objeto e seus filhos"""
         for child in self.children:
-            child.collect(action)
-        action(self)
+            child.render(renderer)

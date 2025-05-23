@@ -12,6 +12,7 @@ uniform vec3 viewPos; // posicao do observador/camera
 uniform vec3 ambientLightColor;
 uniform Light lights[MAX_LIGHTS]; // luzes
 uniform int numLights;
+uniform bool lit = true;
 // -- Material atual
 uniform sampler2D tex; // textura
 uniform vec3 ka; // coeficiente de reflexao ambiente
@@ -27,16 +28,19 @@ in vec3 v_normal;
 // Output da fragment shader
 out vec4 fragColor;
 
+// TODO use light falloff
+
 vec3 calc_diffuse(vec3 color, vec3 lightDir, vec3 norm) {
-	float diff = max(dot(norm, lightDir), 0.0); // verifica limite angular (entre 0 e 90)
+	float diff = max(dot(norm, lightDir), 0.0);
     return kd * diff * color;
 }
 
 vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
-	// vec3 specDir = normalize(reflect(-lightDir, norm)); // Phong usa reflection
-	vec3 specDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflection
-    float NdotH = max(dot(norm, specDir), 0.0);
-    if (NdotH <= 0.0) return vec3(0.0); // evita pow(0, ns)
+	vec3 specDir = normalize(reflect(-lightDir, norm)); // Phong usa reflection
+	// vec3 specDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflection
+    float NdotH = dot(norm, specDir);
+    if (NdotH <= 0.0) return vec3(0.0); // Usar if ao invés de max consertou um erro de renderização
+
     float spec = pow(NdotH, ns);
     return ks * spec * color;
 }
@@ -44,7 +48,13 @@ vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
 void main(){
     vec4 texture = texture(tex, v_uv);
     if (texture.a < 0.9) // alpha threshold
-        discard; 
+        discard;
+
+	// Não é ideal usar if ao invés de outro shader
+	if (!lit) {
+		fragColor = texture;
+		return;
+	}
     
 	vec3 ambient = ka * ambientLightColor;
 
