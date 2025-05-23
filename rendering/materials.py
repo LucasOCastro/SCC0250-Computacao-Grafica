@@ -1,19 +1,44 @@
-import numpy as np
 from OpenGL.GL import *
 from PIL import Image
+import numpy as np
 import os
 
 TEXTURE_SUB_FOLDER = 'textures'
 
+class LightParameters:
+    """
+    Armazena os parâmetros de iluminação de um material.
+    vec3 ka; //  coeficiente de reflexao ambiente
+    vec3 kd; //  coeficiente de reflexao difusa
+    vec3 ks; //  coeficiente de reflexao especular
+    float ns; // expoente de reflexao especular
+    """
+    def __init__(self, 
+                 ka: np.ndarray = np.ones(3, dtype=np.float32),
+                 kd: np.ndarray = np.ones(3, dtype=np.float32),
+                 ks: np.ndarray = np.ones(3, dtype=np.float32),
+                 ns: float = 1.0):
+        self.ka = np.array(ka, dtype=np.float32)
+        self.kd = np.array(kd, dtype=np.float32)
+        self.ks = np.array(ks, dtype=np.float32)
+        self.ns = ns
+
+    def read_line(self, name: str, value: str) -> None:
+        name = name.lower()
+        if name == 'ka': self.ka = np.array(value.split(), dtype=np.float32)
+        elif name == 'kd': self.kd = np.array(value.split(), dtype=np.float32)
+        elif name == 'ks': self.ks = np.array(value.split(), dtype=np.float32)
+        elif name == 'ns': self.ns = float(value)
+
 class Material:
     """
-    Representa uma instância de material simples, definido por um arquivo de textura (ignoramos rugosidade, especularidade, etc).
+    Representa uma instância de material simples.
 
-    Em uma engine real, dados de material (textura) e de uso (ebo, indices) seriam separados.
-    Por simplicidade, unimos os dois conceitos, dado que nosso projeto não usa o mesmo material em modelos diferentes.
+    Em uma engine real, dados de material (textura) e de aplicação a mesh (ebo, indices) seriam separados. 
+    Por simplicidade, unimos os conceitos, dado que nosso projeto não usa o mesmo material em modelos diferentes.
     """
     def __init__(self, texture_path: str, 
-                 light_parameters: dict[str, np.ndarray | float] = {},
+                 light_parameters: LightParameters = LightParameters(),
                  wrap_type = GL_REPEAT,
                  filter_type = GL_LINEAR):
         self.texture_id = None
@@ -40,10 +65,6 @@ class Material:
             GL_UNSIGNED_BYTE,
             image_data
         )
-    
-    @property
-    def is_lit(self) -> bool:
-        return len(self.light_parameters) > 0
 
     def set_wrap_mode(self, wrap_type):
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
@@ -72,8 +93,7 @@ class Material:
             glDeleteBuffers(1, [self.ebo])
 
     @staticmethod
-    def try_load_material(file_name: str, root_path: str, light_parameters: dict[str, np.ndarray | float] = {}):
-        
+    def try_load_material(file_name: str, root_path: str, light_parameters: LightParameters = LightParameters()):
         """
         Tenta carregar um material a partir de uma textura. 
         Tenta primeiro em 'root_path/textures/file_name', depois em 'root_path/file_name'.
@@ -104,7 +124,7 @@ class MaterialLibrary:
 
         folder = os.path.dirname(mtl_path)
         current_material_name = None
-        current_light_parameters: dict[str, np.ndarray | float] = {}
+        current_light_parameters: LightParameters = None
         
         with open(mtl_path, "r") as file:
             for line in file:
@@ -117,24 +137,16 @@ class MaterialLibrary:
                         print(f"Material {current_material_name} has no texture")
                         self.materials[current_material_name] = None
                     current_material_name = values[1]
-                    current_light_parameters = {}
+                    current_light_parameters = LightParameters()
                 elif values[0] == 'map_Kd': # albedo
-                    file_name = os.path.basename(values[1])                    
+                    file_name = os.path.basename(values[1])
                     new_material = Material.try_load_material(file_name, folder, light_parameters=current_light_parameters)
                     self.materials[current_material_name] = new_material
-
+                    # reseta
                     current_material_name = None
-                    current_light_parameters = {}
-                else: # parametros de luz (ks, kd, etc)
-                    try:
-                        params = values[1].split()
-                        name = values[0].strip().lower()
-                        if len(params) == 1:
-                            current_light_parameters[name] = float(params[0])
-                        else:
-                            current_light_parameters[name] = np.array([float(param) for param in params], dtype=np.float32)
-                    except ValueError:
-                        pass
+                    current_light_parameters = None
+                elif current_light_parameters is not None: # parametros de luz (ks, kd, etc)
+                    current_light_parameters.read_line(values[0], values[1])
 
         if current_material_name is not None:
             print(f"Material {current_material_name} has no texture")
