@@ -11,7 +11,7 @@ from rendering.lightdata import LightData
 from camera import Camera
 
 class Scene:
-    def DEBUG_make_light(self, pos, color):
+    def DEBUG_make_light(self, pos, color) -> LightObject:
         light_obj = LightObject(LightData(color))
         light_obj.set_pos(pos)
         light_mesh = MeshObject("particles/skull1/Skull.obj", is_force_unlit=True)
@@ -38,15 +38,11 @@ class Scene:
         self.test_light_2 = light2
 
         self.ambient_light = LightData([1, 1, 1])
-        self.exterior_lights: list[LightObject] = [light1]
-        self.interior_lights: list[LightObject] = [light2]
+        self.exterior_lights: list[LightData] = [light1.light_data]
+        self.interior_lights: list[LightData] = [light2.light_data]
     
     def get_all_lights(self) -> list[LightData]:
-        return [
-            self.ambient_light,
-            *[l.light_data for l in self.exterior_lights],
-            *[l.light_data for l in self.interior_lights]
-        ]
+        return [self.ambient_light] + self.exterior_lights + self.interior_lights
     
     def gen_interior(self):
         container = Object()
@@ -112,8 +108,8 @@ class Scene:
         renderer.set_camera_uniforms(camera)
         renderer.set_ambient_light(self.ambient_light)
 
-        renderer.set_light_uniforms([(l.light_data, l.position) for l in self.exterior_lights])
+        renderer.set_light_uniforms(self.exterior_lights)
         self.exterior_container.render(renderer)
 
-        renderer.set_light_uniforms([(l.light_data, l.position) for l in self.interior_lights])
+        renderer.set_light_uniforms(self.interior_lights)
         self.interior_container.render(renderer)

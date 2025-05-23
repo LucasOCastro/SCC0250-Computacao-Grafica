@@ -73,12 +73,12 @@ class Renderer:
         position = camera.position
         self.set_vec3("viewPos", position)
     
-    def set_light_uniforms(self, lights: list[tuple[LightData, np.ndarray]]):
-        """Define as luzes a serem consideradas, recebendo uma lista de tuplas (luz, posicao)."""
+    def set_light_uniforms(self, lights: list[LightData]):
+        """Define as luzes a serem consideradas na renderização."""
         self.set_int("numLights", len(lights))
         for i in range(len(lights)):
-            light, pos = lights[i]
-            self.set_vec3(f"lights[{i}].position", pos)
+            light = lights[i]
+            self.set_vec3(f"lights[{i}].position", light.world_position)
             self.set_vec3(f"lights[{i}].color", light.color)
     
     def set_ambient_light(self, ambient_light: LightData):
@@ -86,7 +86,7 @@ class Renderer:
         self.set_vec3("ambientLightColor", ambient_light.color)
     
     def set_lit(self, lit: bool):
-        """Define se as luzes devem ser consideradas na renderização."""
+        """Se verdadeiro, objetos consideram luzes. Se falso, objetos são renderizados completamente iluminados."""
         self.set_int("lit", int(lit))
 
     def render_mesh(self, mesh: Mesh, world_transformation_matrix: np.ndarray):
