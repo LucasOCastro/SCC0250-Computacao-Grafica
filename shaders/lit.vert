@@ -19,5 +19,6 @@ void main() {
     gl_Position = projection * view * model * vec4(in_position, 1.0);
 	v_uv = in_uv;
 	v_fragPos = vec3(model * vec4(in_position, 1.0));
-	v_normal = normalize(mat3(transpose(inverse(model))) * in_normal); // descarta translacao
+	// Idealmente a matriz de normal é calculada na cpu e passada para o shader.
+	v_normal = normalize(mat3(transpose(inverse(model))) * in_normal); // descarta translacao e escala
 }

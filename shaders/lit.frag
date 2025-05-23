@@ -10,9 +10,9 @@ struct Light {
 // -- Camera e luzes
 uniform vec3 viewPos; // posicao do observador/camera
 uniform vec3 ambientLightColor;
-uniform Light lights[MAX_LIGHTS]; // luzes
+uniform Light lights[MAX_LIGHTS];
 uniform int numLights;
-uniform bool lit = true;
+uniform bool lit;
 // -- Material atual
 uniform sampler2D tex; // textura
 uniform vec3 ka; // coeficiente de reflexao ambiente
@@ -28,50 +28,60 @@ in vec3 v_normal;
 // Output da fragment shader
 out vec4 fragColor;
 
-// TODO use light falloff
-
 vec3 calc_diffuse(vec3 color, vec3 lightDir, vec3 norm) {
 	float diff = max(dot(norm, lightDir), 0.0);
     return kd * diff * color;
 }
 
 vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
-	vec3 specDir = normalize(reflect(-lightDir, norm)); // Phong usa reflection
-	// vec3 specDir = normalize(viewDir + lightDir); // Blinn-Phong usa half vector ao invés de reflection
-    float NdotH = dot(norm, specDir);
-    if (NdotH <= 0.0) return vec3(0.0); // Usar if ao invés de max consertou um erro de renderização
-
-    float spec = pow(NdotH, ns);
+	// Phong
+    vec3 specDir = normalize(reflect(-lightDir, norm));
+    float specAngle = max(dot(viewDir, specDir), 0.0);
+	// Blinn-Phong
+	// vec3 halfDir = normalize(viewDir + lightDir);
+	// float specAngle = max(dot(norm, halfDir), 0.0);
+    float spec = pow(specAngle, ns);
     return ks * spec * color;
 }
 
+float calc_attenuation(float d) {
+	const float constant = 1.0;
+	const float linear = 0.01;
+	const float quadratic = 0.001;
+    return 1.0 / (constant + linear * d + quadratic * d * d);
+}
+
 void main(){
-    vec4 texture = texture(tex, v_uv);
-    if (texture.a < 0.9) // alpha threshold
-        discard;
+    vec4 texColor = texture(tex, v_uv);
+	if (texColor.a < 0.9) discard;
 
 	// Não é ideal usar if ao invés de outro shader
 	if (!lit) {
-		fragColor = texture;
+		fragColor = texColor;
 		return;
 	}
     
-	vec3 ambient = ka * ambientLightColor;
-
-	// calculando reflexao difusa e especular
+	// Calculando reflexao difusa e especular
 	vec3 viewDir = normalize(viewPos - v_fragPos);
 	vec3 norm = normalize(v_normal);
 	vec3 diffuse = vec3(0.0);
 	vec3 specular = vec3(0.0);
 	for (int i = 0; i < MAX_LIGHTS; i++) {
 		if (i >= numLights) break;
-		Light light = lights[i];
-		vec3 lightDir = normalize(light.position - v_fragPos);
 
-		diffuse += calc_diffuse(light.color, lightDir, norm);
-		specular += calc_specular(light.color, viewDir, lightDir, norm);
+		// Precisamos da distância pra atenuação de qualquer forma, então nem usamos o normalize
+		Light light = lights[i];
+		vec3 vecToLight = light.position - v_fragPos;
+		float distToLight = length(vecToLight);
+		vec3 lightDir = vecToLight / distToLight;
+
+		// Atenuação aplicada em cada valor
+		float attenuation = calc_attenuation(distToLight);
+		diffuse += calc_diffuse(light.color, lightDir, norm) * attenuation;
+		specular += calc_specular(light.color, viewDir, lightDir, norm) * attenuation;
 	};
 	
-	// aplicando o modelo de iluminacao
-	fragColor = vec4((ambient + diffuse + specular), 1.0) * texture;
+	// Aplicando o modelo de iluminacao
+	vec3 ambient = ka * ambientLightColor;
+	fragColor = vec4(texColor.rgb * (ambient + diffuse + specular), 1.0);
 }
