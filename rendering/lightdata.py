@@ -1,4 +1,5 @@
 import numpy as np
+from editablevalue import EditableValue;
 
 class LightData:
     """
@@ -7,30 +8,20 @@ class LightData:
     """
     
     def __init__(self,
+                 name: str,
                  color: np.ndarray,
                  default_intensity: float = 1.0,
                  min_intensity: float = 0.0,
                  max_intensity: float = 1.3,
                  world_position: np.ndarray = [0, 0, 0]):
         self.default_color = np.array(color, dtype=np.float32)
-        self.default_intensity = default_intensity
-        self._intensity = default_intensity
-        self.min_intensity = min_intensity
-        self.max_intensity = max_intensity
+        self.intensity = EditableValue(default_intensity, min_intensity, max_intensity)
         self.world_position = np.array(world_position, dtype=np.float32)
     
     @property
-    def color(self):
-        return self.default_color * self._intensity
-    
-    @property
-    def intensity(self):
-        return self._intensity
-    
-    @intensity.setter
-    def intensity(self, value):
-        self._intensity = max(min(value, self.max_intensity), self.min_intensity)
+    def color(self) -> np.ndarray:
+        return self.default_color * self.intensity.value
     
     def reset(self):
-        self._intensity = self.default_intensity
+        self.intensity = self.default_intensity
     
