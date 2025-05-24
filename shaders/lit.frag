@@ -37,9 +37,12 @@ vec3 calc_specular(vec3 color, vec3 viewDir, vec3 lightDir, vec3 norm) {
 	// Phong
     vec3 specDir = normalize(reflect(-lightDir, norm));
     float specAngle = max(dot(viewDir, specDir), 0.0);
+
 	// Blinn-Phong
 	// vec3 halfDir = normalize(viewDir + lightDir);
 	// float specAngle = max(dot(norm, halfDir), 0.0);
+
+	if (specAngle <= 0.0) return vec3(0.0); // Evita erro de renderização
     float spec = pow(specAngle, ns);
     return ks * spec * color;
 }
