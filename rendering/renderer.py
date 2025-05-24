@@ -3,6 +3,8 @@ import numpy as np
 from camera import Camera
 from rendering.lightdata import LightData
 from rendering.mesh import Mesh
+from rendering.materials import LightParameters
+from editablevalue import EditableValue
 
 class Renderer:
     """
@@ -39,6 +41,13 @@ class Renderer:
         glEnable(GL_LINE_SMOOTH)
         glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
 
+        # Prepara offset de parâmetros
+        self.light_param_multipliers = {
+            'ka': EditableValue(1, 0, 2),
+            'kd': EditableValue(1, 0, 2),
+            'ks': EditableValue(1, 0, 2),
+            'ns': EditableValue(1, 0, 2)
+        }
         self.set_lit(True)
 
     def toggle_wireframe(self) -> None:
@@ -93,11 +102,13 @@ class Renderer:
         """Renderiza um mesh e seus materiais a partir da matriz de transformação."""
         self.set_mat4("model", world_transformation_matrix)
         glBindVertexArray(mesh.vao)
+        offsets = self.light_param_multipliers
         for material in mesh.material_library.materials.values():
-            self.set_vec3('ka', material.light_parameters.ka)
-            self.set_vec3('kd', material.light_parameters.kd)
-            self.set_vec3('ks', material.light_parameters.ks)
-            self.set_float('ns', material.light_parameters.ns)
+            params = material.light_parameters
+            self.set_vec3('ka', params.ka * offsets['ka'].value)
+            self.set_vec3('kd', params.kd * offsets['kd'].value)
+            self.set_vec3('ks', params.ks * offsets['ks'].value)
+            self.set_float('ns', params.ns * offsets['ns'].value)
             glBindTexture(GL_TEXTURE_2D, material.texture_id)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, material.ebo)
             glDrawElements(GL_TRIANGLES, len(material.indices), GL_UNSIGNED_INT, None)
