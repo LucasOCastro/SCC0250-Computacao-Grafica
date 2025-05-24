@@ -21,8 +21,8 @@ class Scene:
 
     def __init__(self):
         self.container = Object()
-        self.interior_container = self.gen_interior()
-        self.exterior_container = self.gen_exterior()
+        self.interior_container = self._gen_interior()
+        self.exterior_container = self._gen_exterior()
         self.container.add_children([self.interior_container, self.exterior_container])
 
         # TODO testing light, think of alternative to register_light_source
@@ -43,15 +43,30 @@ class Scene:
     
     def get_all_lights(self) -> list[LightData]:
         return [self.ambient_light] + self.exterior_lights + self.interior_lights
-    
-    def gen_interior(self):
+        
+    def render_scene(self, renderer: Renderer, camera: Camera) -> None:
+        renderer.set_camera_uniforms(camera)
+        renderer.set_ambient_light(self.ambient_light)
+
+        renderer.set_light_uniforms(self.exterior_lights)
+        self.exterior_container.render(renderer)
+
+        renderer.set_light_uniforms(self.interior_lights)
+        self.interior_container.render(renderer)
+
+    def _gen_shroom_piece(self, obj_sub_dir: str):
+        """Separamos a construção do cogumelo entre interior e exterior para lidar com luzes."""
+        shroom_piece = MeshObject(obj_sub_dir)
+        shroom_piece.set_scale_single(5)
+        shroom_piece.set_rot_deg([0, -100, 0])
+        shroom_piece.set_pos([0, 0, -50])
+        return shroom_piece
+
+    def _gen_interior(self):
         container = Object()
 
-        self.shroom = MeshObject("shroom/shroom_new.obj")
-        self.shroom.set_scale_single(5)
-        self.shroom.set_rot_deg([0, -100, 0])
-        self.shroom.set_pos([0, 0, -50])
-        container.add_child(self.shroom)
+        self.shroom_inner = self._gen_shroom_piece("shroom/shroom_inner.obj")
+        container.add_child(self.shroom_inner)
 
         shroom_floor_height = 3.4
         self.witch = MeshObject("witch/witch.obj")
@@ -65,7 +80,7 @@ class Scene:
 
         return container
     
-    def gen_exterior(self):
+    def _gen_exterior(self):
         container = Object()
 
         self.skybox = MeshObject("skybox/skybox.obj", "skybox.png", is_force_unlit=True)
@@ -77,6 +92,9 @@ class Scene:
         self.scenario.set_scale_single(0.4)
         self.scenario.set_pos([0, 0, -50])
         container.add_child(self.scenario)
+
+        self.shroom_outer = self._gen_shroom_piece("shroom/shroom_outer.obj")
+        container.add_child(self.shroom_outer)
 
         frog_pos = np.array([-30, 0, -50])
         self.frog = FrogCrowned()
@@ -103,13 +121,3 @@ class Scene:
         container.add_children(gnomes)
 
         return container
-        
-    def render_scene(self, renderer: Renderer, camera: Camera) -> None:
-        renderer.set_camera_uniforms(camera)
-        renderer.set_ambient_light(self.ambient_light)
-
-        renderer.set_light_uniforms(self.exterior_lights)
-        self.exterior_container.render(renderer)
-
-        renderer.set_light_uniforms(self.interior_lights)
-        self.interior_container.render(renderer)
