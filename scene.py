@@ -83,7 +83,7 @@ class Scene:
     def _gen_exterior(self):
         container = Object()
 
-        self.skybox = MeshObject("skybox/skybox.obj", "skybox.png", is_force_unlit=True)
+        self.skybox = MeshObject("skybox/skybox.obj", "skybox.png")
         self.skybox.set_scale_single(1000)
         self.skybox.mesh.material_library.get_default().set_filter_mode(GL_NEAREST)
         container.add_child(self.skybox)
