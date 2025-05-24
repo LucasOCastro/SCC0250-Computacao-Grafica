@@ -27,7 +27,7 @@ def main():
 
     # Cria o input para manipular a cena
     input = Input(window)
-    scene_input = SceneInput(scene, renderer, input)
+    scene_input = SceneInput(scene, renderer, input, window)
 
     time = 0
     while not window.should_close():

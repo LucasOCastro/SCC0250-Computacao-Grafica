@@ -11,8 +11,8 @@ from rendering.lightdata import LightData
 from camera import Camera
 
 class Scene:
-    def DEBUG_make_light(self, pos, color) -> LightObject:
-        light_obj = LightObject(LightData(color))
+    def DEBUG_make_light(self, name: str, pos: np.ndarray, color: np.ndarray) -> LightObject:
+        light_obj = LightObject(LightData(name, color))
         light_obj.set_pos(pos)
         light_mesh = MeshObject("particles/skull1/Skull.obj", is_force_unlit=True)
         light_mesh.set_scale_single(20)
@@ -27,17 +27,17 @@ class Scene:
 
         # TODO testing light, think of alternative to register_light_source
         light_pos = self.frog.position + np.array([0, 10, 0], dtype=np.float32)
-        light1 = self.DEBUG_make_light(light_pos, [0, 1, 1])
+        light1 = self.DEBUG_make_light("External Light", light_pos, [0, 1, 1])
         self.exterior_container.add_child(light1)
 
         light_pos = self.witch.position + np.array([0, 10, 0], dtype=np.float32)
-        light2 = self.DEBUG_make_light(light_pos, [1, 0, 0])
+        light2 = self.DEBUG_make_light("Internal Light", light_pos, [1, 0, 0])
         self.interior_container.add_child(light2)
 
         self.test_light_1 = light1
         self.test_light_2 = light2
 
-        self.ambient_light = LightData([1, 1, 1])
+        self.ambient_light = LightData("Ambient Light", [1, 1, 1])
         self.exterior_lights: list[LightData] = [light1.light_data]
         self.interior_lights: list[LightData] = [light2.light_data]
     

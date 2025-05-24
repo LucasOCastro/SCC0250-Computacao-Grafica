@@ -43,10 +43,10 @@ class Renderer:
 
         # Prepara offset de parâmetros
         self.light_param_multipliers = {
-            'ka': EditableValue(1, 0, 2),
-            'kd': EditableValue(1, 0, 2),
-            'ks': EditableValue(1, 0, 2),
-            'ns': EditableValue(1, 0, 2)
+            'ka': EditableValue(1, 0, 2, 'Ka Multiplier'),
+            'kd': EditableValue(1, 0, 2, 'Kd Multiplier'),
+            'ks': EditableValue(1, 0, 2, 'Ks Multiplier'),
+            'ns': EditableValue(1, 0, 2, 'Ns Multiplier'),
         }
         self.set_lit(True)
 

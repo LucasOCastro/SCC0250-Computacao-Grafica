@@ -31,9 +31,13 @@ class Window:
 
         # Limita a taxa de quadros para o deltaTime funcionar
         glfw.swap_interval(1)
-
+    
     def should_close(self) -> bool:
         return glfw.window_should_close(self.window)
+    
+    def set_debug_info(self, info: str) -> None:
+        glfw.set_window_title(self.window, self.title + " - " + info)
+        
 
     def pre_render(self) -> None:
         """ 

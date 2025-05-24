@@ -4,16 +4,18 @@ from input import Input
 import glfw
 from matrixmath import *
 from editablevalue import EditableValue
+from window import Window
 
 
 class SceneInput:
     """
     Classe para manipular a cena de acordo com o input do usuário.
     """
-    def __init__(self, scene: Scene, renderer: Renderer, input: Input):
+    def __init__(self, scene: Scene, renderer: Renderer, input: Input, window: Window):
         self.scene = scene
         self.input = input
         self.renderer = renderer
+        self.window = window
 
         input.register_key_callback(glfw.KEY_P, renderer.toggle_wireframe)
         self._setup_editables()
@@ -57,4 +59,5 @@ class SceneInput:
     def _update_editables(self, delta_time: float):
         delta = self.input.get_1d_axis(self.key_edit_up, self.key_edit_down)
         self.current_editable.value += delta * delta_time * self.edit_speed
+        self.window.set_debug_info(f"{self.current_editable.label}: {self.current_editable.value:.2f}")
             
