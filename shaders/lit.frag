@@ -63,6 +63,12 @@ void main(){
 		fragColor = texColor;
 		return;
 	}
+
+	// Normalmente backfaces são descartados, mas por especificação do trabalho apenas ignoramos iluminação.
+	if (!gl_FrontFacing) {
+		fragColor = texColor;
+		return;
+	}
     
 	// Calculando reflexao difusa e especular
 	vec3 viewDir = normalize(viewPos - v_fragPos);
