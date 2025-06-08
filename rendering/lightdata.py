@@ -14,6 +14,7 @@ class LightData:
                  min_intensity: float = 0.0,
                  max_intensity: float = 1.5,
                  world_position: np.ndarray = [0, 0, 0]):
+        self.name = name
         self.default_color = np.array(color, dtype=np.float32)
         self.intensity = EditableValue(default_intensity, min_intensity, max_intensity, name + ' Intensity')
         self.world_position = np.array(world_position, dtype=np.float32)

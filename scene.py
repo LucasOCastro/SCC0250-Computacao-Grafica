@@ -31,16 +31,12 @@ class Scene:
         light1 = self.DEBUG_make_light("External Light", light_pos, [0, 1, 1])
         self.exterior_container.add_child(light1)
 
-        light_pos = self.witch.position + np.array([0, 10, 0], dtype=np.float32)
-        light2 = self.DEBUG_make_light("Internal Light", light_pos, [1, 0, 0])
-        self.interior_container.add_child(light2)
 
         self.test_light_1 = light1
-        self.test_light_2 = light2
 
         self.ambient_light = LightData("Ambient Light", [1, 1, 1])
         self.exterior_lights: list[LightData] = [light1.light_data]
-        self.interior_lights: list[LightData] = [light2.light_data]
+        self.interior_lights: list[LightData] = [self.lamp_light_front.light_data, self.lamp_light_back.light_data]
     
     def get_all_lights(self) -> list[LightData]:
         return [self.ambient_light] + self.exterior_lights + self.interior_lights
@@ -75,6 +71,25 @@ class Scene:
         self.witch.set_pos([0, shroom_floor_height, -60])
         container.add_child(self.witch)
         
+        self.lamp = MeshObject("lamp/HangingLamp.obj", lit_mode=LitMode.LIT)
+        self.lamp.set_pos([0, shroom_floor_height + 44, -50])
+        #duas luzes para garantir q a lampada seja iluminada
+        self.lamp_light_front = LightObject(LightData("Lamp Light", [0, 0.8, 0.5], default_intensity=1, max_intensity=1.5))
+        self.lamp_light_back = LightObject(LightData("Lamp Light", [0, 0.8, 0.5], default_intensity=1, max_intensity=1.5))
+        #atribuição garanti q possuem o mesmo editavel
+        self.lamp_light_back.light_data.intensity = self.lamp_light_front.light_data.intensity
+        self.lamp_light_front.set_pos([0, shroom_floor_height + 21, -49])
+        self.lamp_light_back.set_pos([0, shroom_floor_height + 21, -51])
+
+        self.teste = MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT)
+        container.add_child(self.teste)
+        self.teste.set_pos([0, shroom_floor_height + 21, -49])
+        self.teste.set_scale_single(4)
+        container.add_child(MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT))
+        self.lamp.set_scale_single(0.01)
+        container.add_child(self.lamp)
+        container.add_child(self.lamp_light_front)
+        container.add_child(self.lamp_light_back)
         self.cauldron = Cauldron()
         self.cauldron.set_pos([0, shroom_floor_height, -52])
         container.add_child(self.cauldron)

@@ -41,9 +41,16 @@ class SceneInput:
         self.key_edit_reset = glfw.KEY_KP_5
         self.edit_speed = 5
 
+        lights = self.scene.get_all_lights()
+        lights_set = set()
+        editable_lights = []
+        for light in lights:
+            if light.name not in lights_set:
+                lights_set.add(light.name)
+                editable_lights.append(light.intensity)
         # Podemos editar as luzes da cena e os parâmetros de materiais globais
         self.editable_values: list[EditableValue] = [
-            *[light.intensity for light in self.scene.get_all_lights()],
+            *editable_lights,
             *self.renderer.light_param_multipliers.values(),
         ]
         self.current_editable: EditableValue = self.editable_values[0]
