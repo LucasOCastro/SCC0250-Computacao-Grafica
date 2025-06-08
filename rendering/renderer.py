@@ -3,8 +3,8 @@ import numpy as np
 from camera import Camera
 from rendering.lightdata import LightData
 from rendering.mesh import Mesh
-from rendering.materials import LightParameters
 from editablevalue import EditableValue
+from rendering.litmode import LitMode
 
 class Renderer:
     """
@@ -48,7 +48,6 @@ class Renderer:
             'ks': EditableValue(1, 0, 2, 'Ks Multiplier'),
             'ns': EditableValue(1, 0, 2, 'Ns Multiplier'),
         }
-        self.set_lit(True)
 
     def toggle_wireframe(self) -> None:
         if glGetIntegerv(GL_POLYGON_MODE)[0] == GL_FILL:
@@ -69,6 +68,9 @@ class Renderer:
 
     def set_vec3(self, name: str, value: np.ndarray) -> None:
         glUniform3fv(glGetUniformLocation(self.program, name), 1, value)
+    
+    def set_bool(self, name: str, value: bool) -> None:
+        self.set_int(name, int(value))
 
     # Funções para enviar parâmetros especiais
     def set_camera_uniforms(self, camera: Camera) -> None:
@@ -93,14 +95,18 @@ class Renderer:
     def set_ambient_light(self, ambient_light: LightData):
         """Define a luz ambiente."""
         self.set_vec3("ambientLightColor", ambient_light.color)
-    
-    def set_lit(self, lit: bool):
-        """Se verdadeiro, objetos consideram luzes. Se falso, objetos são renderizados completamente iluminados."""
-        self.set_int("lit", int(lit))
 
-    def render_mesh(self, mesh: Mesh, world_transformation_matrix: np.ndarray):
-        """Renderiza um mesh e seus materiais a partir da matriz de transformação."""
-        self.set_mat4("model", world_transformation_matrix)
+    def render_mesh(self, mesh: Mesh, world_transformation_matrix: np.ndarray, lit_mode: LitMode | None):
+        """Renderiza um mesh e seus materiais a partir da matriz de transformação."""        
+        if lit_mode is None: lit_mode = LitMode.LIT
+
+        is_lit = lit_mode is LitMode.LIT or lit_mode is LitMode.LIT_BACKFACES
+        self.set_bool('lit', is_lit)
+
+        light_backfaces = lit_mode is LitMode.LIT_BACKFACES
+        self.set_bool('lightBackfaces', light_backfaces)
+        
+        self.set_mat4('model', world_transformation_matrix)
         glBindVertexArray(mesh.vao)
         offsets = self.light_param_multipliers
         for material in mesh.material_library.materials.values():

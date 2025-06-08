@@ -8,13 +8,14 @@ from objects.actors.Gnome import Gnome
 from objects.actors.Frog import FrogCrowned
 from rendering.renderer import Renderer
 from rendering.lightdata import LightData
+from rendering.litmode import LitMode;
 from camera import Camera
 
 class Scene:
     def DEBUG_make_light(self, name: str, pos: np.ndarray, color: np.ndarray) -> LightObject:
         light_obj = LightObject(LightData(name, color))
         light_obj.set_pos(pos)
-        light_mesh = MeshObject("particles/skull1/Skull.obj", is_force_unlit=True)
+        light_mesh = MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT)
         light_mesh.set_scale_single(20)
         light_obj.add_child(light_mesh)
         return light_obj
@@ -88,7 +89,7 @@ class Scene:
         self.skybox.mesh.material_library.get_default().set_filter_mode(GL_NEAREST)
         container.add_child(self.skybox)
 
-        self.scenario = MeshObject("scenario/scenario.obj")
+        self.scenario = MeshObject("scenario/scenario.obj", lit_mode=LitMode.LIT_BACKFACES)
         self.scenario.set_scale_single(0.4)
         self.scenario.set_pos([0, 0, -50])
         container.add_child(self.scenario)

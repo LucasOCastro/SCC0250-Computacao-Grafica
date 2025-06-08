@@ -12,17 +12,18 @@ uniform vec3 viewPos; // posicao do observador/camera
 uniform vec3 ambientLightColor;
 uniform Light lights[MAX_LIGHTS];
 uniform int numLights;
-uniform bool lit;
+uniform bool lit; // Se false, retorna a cor da textura sem aplicar luz.
 // -- Material atual
 uniform sampler2D tex; // textura
 uniform vec3 ka; // coeficiente de reflexao ambiente
 uniform vec3 kd; // coeficiente de reflexao difusa
 uniform vec3 ks; // coeficiente de reflexao especular
-uniform float ns; // expoente de reflexao especular
+uniform float ns; // expoente de reflexao 
+uniform bool lightBackfaces; // Se true, ilumina ambas as faces do modelo (útil para grama e modelos de 1 face)
 
 // Recebe da vertex shader
 in vec2 v_uv;
-in vec3 v_fragPos; //posicao do fragmento (i.e., posicao na superficie onde a iluminacao sera calculada)
+in vec3 v_fragPos;
 in vec3 v_normal;
 
 // Output da fragment shader
@@ -65,7 +66,7 @@ void main(){
 	}
 
 	// Normalmente backfaces são descartados, mas por especificação do trabalho apenas ignoramos iluminação.
-	if (!gl_FrontFacing) {
+	if (!gl_FrontFacing && !lightBackfaces) {
 		fragColor = texColor;
 		return;
 	}
