@@ -3,10 +3,11 @@ from OpenGL.GL import *
 from objects.object import Object
 from objects.lightobject import LightObject
 from objects.meshobject import MeshObject
-from objects.actors.cauldron import Cauldron
+from objects.actors.Cauldron import Cauldron
 from objects.actors.Gnome import Gnome
 from objects.actors.Frog import FrogCrowned
 from objects.actors.Elemental import Elemental
+from objects.actors.Lamp import Lamp
 from rendering.renderer import Renderer
 from rendering.lightdata import LightData
 from rendering.litmode import LitMode;
@@ -38,14 +39,14 @@ class Scene:
         self.ambient_light = LightData("Ambient Light", [1, 1, 1])
         self.exterior_lights: list[LightData] = [light1.light_data]
         self.interior_lights: list[LightData] = [
-            self.lamp_light_front.light_data,
-            self.lamp_light_back.light_data,
-            self.fire_elemental.light.light_data]
+            *self.lamp.light_data,
+            self.fire_elemental.light.light_data
+        ]
         
         self.editables = [
             self.ambient_light.intensity,
             light1.light_data.intensity,
-            self.lamp_light_front.light_data.intensity,
+            self.lamp.editable_group,
             self.fire_elemental.editable_group
         ]
     
@@ -81,21 +82,11 @@ class Scene:
         self.witch.set_scale_single(6)
         self.witch.set_pos([0, shroom_floor_height, -60])
         container.add_child(self.witch)
-        
-        self.lamp = MeshObject("lamp/HangingLamp.obj", lit_mode=LitMode.LIT)
-        self.lamp.set_pos([0, shroom_floor_height + 44, -50])
-        #duas luzes para garantir q a lampada seja iluminada
-        lamp_light = LightData("Lamp Light", [0, 0.8, 0.5], default_intensity=0.5, max_intensity=.75)
-        self.lamp_light_front = LightObject(lamp_light)
-        self.lamp_light_back = LightObject(lamp_light)
-        #atribuição garanti q possuem o mesmo editavel
-        self.lamp_light_front.set_pos([0, shroom_floor_height + 21, -49])
-        self.lamp_light_back.set_pos([0, shroom_floor_height + 21, -51])
 
-        self.lamp.set_scale_single(0.01)
+        self.lamp = Lamp()        
+        self.lamp.set_pos([0, shroom_floor_height + 44, -50])
         container.add_child(self.lamp)
-        container.add_child(self.lamp_light_front)
-        container.add_child(self.lamp_light_back)
+        
         self.cauldron = Cauldron()
         self.cauldron.set_pos([0, shroom_floor_height, -52])
         container.add_child(self.cauldron)

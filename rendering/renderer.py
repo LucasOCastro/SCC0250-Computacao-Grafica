@@ -96,16 +96,16 @@ class Renderer:
         """Define a luz ambiente."""
         self.set_vec3("ambientLightColor", ambient_light.color)
 
-    def render_mesh(self, mesh: Mesh, world_transformation_matrix: np.ndarray, lit_mode: LitMode | None):
-        """Renderiza um mesh e seus materiais a partir da matriz de transformação."""        
-        if lit_mode is None: lit_mode = LitMode.LIT
+    def set_lit_mode(self, lit_mode: LitMode):
+        is_lit = lit_mode is LitMode.LIT or lit_mode is LitMode.LIT_BACKFACES        
+        self.set_bool("lit", is_lit)
+        self.set_bool("lightBackfaces", lit_mode is LitMode.LIT_BACKFACES)
 
-        is_lit = lit_mode is LitMode.LIT or lit_mode is LitMode.LIT_BACKFACES
-        self.set_bool('lit', is_lit)
-
-        light_backfaces = lit_mode is LitMode.LIT_BACKFACES
-        self.set_bool('lightBackfaces', light_backfaces)
-        
+    def render_mesh(self, mesh: Mesh, world_transformation_matrix: np.ndarray, lit_mode_override: LitMode | None = None):
+        """
+        Renderiza um mesh e seus materiais a partir da matriz de transformação.
+        Se lit_mode_override for None, utiliza o modo de iluminação configurado no material da mesh.
+        """        
         self.set_mat4('model', world_transformation_matrix)
 
         glBindVertexArray(mesh.vao)
@@ -117,6 +117,10 @@ class Renderer:
             self.set_vec3('ks', params.ks * offsets['ks'].value)
             self.set_float('ns', params.ns * offsets['ns'].value)
             self.set_float('colorMultiplier', material.color_multiplier)
+
+            lit_mode = material.lit_mode if lit_mode_override is None else lit_mode_override
+            self.set_lit_mode(lit_mode)
+            
             glBindTexture(GL_TEXTURE_2D, material.texture_id)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, material.ebo)
             glDrawElements(GL_TRIANGLES, len(material.indices), GL_UNSIGNED_INT, None)

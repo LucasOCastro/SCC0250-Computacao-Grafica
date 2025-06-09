@@ -3,7 +3,7 @@ from rendering.renderer import Renderer
 from input import Input
 import glfw
 from matrixmath import *
-from editablevalue import BaseEditableValue
+from editablevalue import EditableValue
 from window import Window
 
 
@@ -19,8 +19,8 @@ class SceneInput:
 
         input.register_key_callback(glfw.KEY_P, renderer.toggle_wireframe)
 
-        self.current_editable: BaseEditableValue = None
-        self.editable_values: list[BaseEditableValue] = []
+        self.current_editable: EditableValue = None
+        self.editable_values: list[EditableValue] = []
         self._setup_editables()
         
 

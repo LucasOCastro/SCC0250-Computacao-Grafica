@@ -5,7 +5,7 @@ import numpy as np
 from objects.lightobject import LightObject
 from rendering.lightdata import LightData
 from rendering.litmode import LitMode
-from editablevalue import EditableValueGroup, EditableValue
+from editablevalue import EditableValueGroup
 
 class Elemental(Object):
     def __init__(self):
@@ -17,6 +17,7 @@ class Elemental(Object):
         self.elemental_mesh.set_scale_single(0.25)
         self.elemental_mesh.set_rot_deg([0, -90, 0])
         self.add_child(self.elemental_mesh)
+        
         material = list(self.elemental_mesh.mesh.material_library.materials.values())[0]
         self.editable_group.add_editable(material.color_multiplier_editable)
 
