@@ -5,19 +5,25 @@ import numpy as np
 from objects.lightobject import LightObject
 from rendering.lightdata import LightData
 from rendering.litmode import LitMode
+from editablevalue import EditableValueGroup, EditableValue
 
 class Elemental(Object):
     def __init__(self):
         super().__init__()
         
+        self.editable_group = EditableValueGroup("Fire Elemental")
+
         self.elemental_mesh = MeshObject("elemental-fire/FireElemental.obj", lit_mode=LitMode.UNLIT)
         self.elemental_mesh.set_scale_single(0.25)
         self.elemental_mesh.set_rot_deg([0, -90, 0])
         self.add_child(self.elemental_mesh)
+        material = list(self.elemental_mesh.mesh.material_library.materials.values())[0]
+        self.editable_group.add_editable(material.color_multiplier_editable)
 
         self.light = LightObject(LightData("Elemental Fire Light", [1, 0.1, 0], default_intensity=0.5, max_intensity=1.5))
         self.light.set_pos(np.array([0, 2.5, 0], dtype=np.float32))
         self.add_child(self.light)
+        self.editable_group.add_editable(self.light.light_data.intensity)
 
         self.hovering = False
     

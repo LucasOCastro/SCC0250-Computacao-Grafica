@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from PIL import Image
 import numpy as np
 import os
+from editablevalue import EditableValue
 
 TEXTURE_SUB_FOLDER = 'textures'
 
@@ -39,13 +40,21 @@ class Material:
     """
     def __init__(self, texture_path: str, 
                  light_parameters: LightParameters = LightParameters(),
+                 color_multiplier_editable: EditableValue = None,
                  wrap_type = GL_REPEAT,
                  filter_type = GL_LINEAR):
         self.texture_id = None
         self.ebo = None
         self.indices = None
         self.light_parameters = light_parameters
+        self.color_multiplier_editable = color_multiplier_editable
+        if color_multiplier_editable is None:
+            self.color_multiplier_editable = EditableValue(1.0, 0.35, 1.5, 'Cor')
         self._load_texture(texture_path, wrap_type, filter_type)
+
+    @property
+    def color_multiplier(self) -> float:
+        return self.color_multiplier_editable.value
 
     def _load_texture(self, texture_path: str, wrap_type, filter_type) -> None:
         self.texture_id = glGenTextures(1)

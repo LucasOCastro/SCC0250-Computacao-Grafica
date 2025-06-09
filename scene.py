@@ -37,7 +37,17 @@ class Scene:
 
         self.ambient_light = LightData("Ambient Light", [1, 1, 1])
         self.exterior_lights: list[LightData] = [light1.light_data]
-        self.interior_lights: list[LightData] = [self.lamp_light_front.light_data, self.lamp_light_back.light_data, self.fire_elemental.light.light_data]
+        self.interior_lights: list[LightData] = [
+            self.lamp_light_front.light_data,
+            self.lamp_light_back.light_data,
+            self.fire_elemental.light.light_data]
+        
+        self.editables = [
+            self.ambient_light.intensity,
+            light1.light_data.intensity,
+            self.lamp_light_front.light_data.intensity,
+            self.fire_elemental.editable_group
+        ]
     
     def get_all_lights(self) -> list[LightData]:
         return [self.ambient_light] + self.exterior_lights + self.interior_lights

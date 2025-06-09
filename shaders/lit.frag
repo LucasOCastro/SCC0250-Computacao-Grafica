@@ -15,6 +15,7 @@ uniform int numLights;
 uniform bool lit; // Se false, retorna a cor da textura sem aplicar luz.
 // -- Material atual
 uniform sampler2D tex; // textura
+uniform float colorMultiplier; // multiplica a cor da textura
 uniform vec3 ka; // coeficiente de reflexao ambiente
 uniform vec3 kd; // coeficiente de reflexao difusa
 uniform vec3 ks; // coeficiente de reflexao especular
@@ -57,6 +58,7 @@ float calc_attenuation(float d) {
 
 void main(){
     vec4 texColor = texture(tex, v_uv);
+	texColor = vec4(texColor.rgb * colorMultiplier, texColor.a);
 	if (texColor.a < 0.9) discard;
 
 	// Não é ideal usar if ao invés de outro shader

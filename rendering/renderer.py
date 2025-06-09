@@ -107,6 +107,7 @@ class Renderer:
         self.set_bool('lightBackfaces', light_backfaces)
         
         self.set_mat4('model', world_transformation_matrix)
+
         glBindVertexArray(mesh.vao)
         offsets = self.light_param_multipliers
         for material in mesh.material_library.materials.values():
@@ -115,6 +116,7 @@ class Renderer:
             self.set_vec3('kd', params.kd * offsets['kd'].value)
             self.set_vec3('ks', params.ks * offsets['ks'].value)
             self.set_float('ns', params.ns * offsets['ns'].value)
+            self.set_float('colorMultiplier', material.color_multiplier)
             glBindTexture(GL_TEXTURE_2D, material.texture_id)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, material.ebo)
             glDrawElements(GL_TRIANGLES, len(material.indices), GL_UNSIGNED_INT, None)

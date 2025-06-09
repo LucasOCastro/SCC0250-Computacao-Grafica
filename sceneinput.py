@@ -3,7 +3,7 @@ from rendering.renderer import Renderer
 from input import Input
 import glfw
 from matrixmath import *
-from editablevalue import EditableValue
+from editablevalue import BaseEditableValue
 from window import Window
 
 
@@ -18,6 +18,9 @@ class SceneInput:
         self.window = window
 
         input.register_key_callback(glfw.KEY_P, renderer.toggle_wireframe)
+
+        self.current_editable: BaseEditableValue = None
+        self.editable_values: list[BaseEditableValue] = []
         self._setup_editables()
         
 
@@ -41,19 +44,12 @@ class SceneInput:
         self.key_edit_reset = glfw.KEY_KP_5
         self.edit_speed = 5
 
-        lights = self.scene.get_all_lights()
-        lights_set = set()
-        editable_lights = []
-        for light in lights:
-            if light.name not in lights_set:
-                lights_set.add(light.name)
-                editable_lights.append(light.intensity)
         # Podemos editar as luzes da cena e os parâmetros de materiais globais
-        self.editable_values: list[EditableValue] = [
-            *editable_lights,
+        self.editable_values = [
+            *self.scene.editables,
             *self.renderer.light_param_multipliers.values(),
         ]
-        self.current_editable: EditableValue = self.editable_values[0]
+        self.current_editable = self.editable_values[0]
         
         if len(self.editable_values) > 9:
             raise ValueError("Too many editables")
@@ -64,7 +60,8 @@ class SceneInput:
         self.input.register_key_callback(self.key_edit_reset, on_reset_key_pressed)
 
     def _update_editables(self, delta_time: float):
-        delta = self.input.get_1d_axis(self.key_edit_up, self.key_edit_down)
-        self.current_editable.value += delta * delta_time * self.edit_speed
-        self.window.set_debug_info(f"{self.current_editable.label}: {self.current_editable.value:.2f}")
+        delta_input = self.input.get_1d_axis(self.key_edit_up, self.key_edit_down)
+        delta = delta_input * delta_time * self.edit_speed
+        self.current_editable.apply_delta(delta)
+        self.window.set_debug_info(str(self.current_editable))
             
