@@ -6,10 +6,11 @@ from window import Window
 from OpenGL.GL import *
 from input import Input
 from sceneinput import SceneInput
-from renderer import Renderer
+from rendering.renderer import Renderer
 from camera import Camera
 from scene import Scene
-from mesh import loaded_meshes
+from rendering.mesh import loaded_meshes
+import numpy as np
 
 def main():
     # Cria a janela configurada
@@ -18,17 +19,15 @@ def main():
         return
 
     # Cria o renderer com os shaders
-    vert_path = "shaders/vert.glsl"
-    frag_path = "shaders/frag.glsl"
-    renderer = Renderer(vert_path, frag_path)
+    renderer = Renderer("shaders/lit.vert", "shaders/lit.frag")
     camera = Camera(window, 0.1, 20000, 45)
 
     # Cria a cena com todos os objetos
-    scene = Scene(renderer)
+    scene = Scene()
 
     # Cria o input para manipular a cena
     input = Input(window)
-    scene_input = SceneInput(scene, renderer, input)
+    scene_input = SceneInput(scene, renderer, input, window)
 
     while not window.should_close():
         window.pre_render()
@@ -39,14 +38,15 @@ def main():
         scene_input.update(delta_time)
         input.clear_deltas()
         
-        renderer.set_camera(camera)
+        # Renderiza a cena
         scene.skybox.set_pos(camera.position)
-        scene.render_scene()
+        scene.render_scene(renderer, camera)
         window.post_render()
 
     for mesh in loaded_meshes.values():
         mesh.destroy()
     scene.container.destroy()
+    renderer.destroy()
     window.destroy()
 
 

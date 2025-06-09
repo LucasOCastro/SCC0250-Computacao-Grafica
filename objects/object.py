@@ -2,16 +2,16 @@ from OpenGL.GL import *
 import numpy as np
 from typing import List
 from matrixmath import *
-from renderer import Renderer
+from rendering.renderer import Renderer
 
 class Object:
     def __init__(self):
         self.model_matrix = np.identity(4, dtype=np.float32)
+        self.world_transformation_matrix = np.identity(4, dtype=np.float32)
         self.position = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         self.rotation = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         self.scale = np.array([1.0, 1.0, 1.0], dtype=np.float32)
-
-        self.indices: np.ndarray = []
+        self.parent: 'Object' = None
         self.children: List[Object] = []
 
     def refresh_model_matrix(self):
@@ -20,12 +20,47 @@ class Object:
         rotation_mat = rotation_matrix_all(self.rotation)
         scale_mat = scale_matrix(self.scale)
 
-        self.model_matrix = multiply_transformations([
+        new_matrix = multiply_transformations([
             translation_mat,
             rotation_mat,
             scale_mat,
         ])
 
+        if np.any(new_matrix != self.model_matrix):
+            self.model_matrix = new_matrix
+            self.refresh_world_matrix()
+    
+    def refresh_world_matrix(self):
+        """Recalcula a matriz global com base na global do pai e a model local."""
+        new_matrix = np.identity(4, dtype=np.float32)
+        if self.parent:
+            new_matrix = multiply_transformations([
+                self.parent.world_transformation_matrix,
+                self.model_matrix
+            ])
+        else:
+            new_matrix = self.model_matrix
+        
+        if np.any(new_matrix != self.world_transformation_matrix):
+            self.world_transformation_matrix = new_matrix
+            for child in self.children:
+                child.refresh_world_matrix()
+    
+    def add_child(self, child: 'Object'):
+        self.children.append(child)
+        child.set_parent(self)
+    
+    def add_children(self, children: List['Object']):
+        for child in children:
+            self.add_child(child)
+    
+    def remove_child(self, child: 'Object'):
+        self.children.remove(child)
+        child.set_parent(None)
+
+    def set_parent(self, parent: 'Object'):
+        self.parent = parent
+        self.refresh_world_matrix()
 
     def set_pos(self, pos: np.ndarray):
         self.position = np.array(pos, dtype=np.float32)
@@ -33,9 +68,9 @@ class Object:
 
     def translate(self, delta: np.ndarray):
         self.position += delta
-        translation_mat = translation_matrix(delta)
-        self.model_matrix = multiply_transformations([translation_mat, self.model_matrix])
-
+        # TODO proper gradual change
+        self.set_pos(self.position)
+        
     def set_rot_rad(self, rot: np.ndarray):
         self.rotation = np.array(rot, dtype=np.float32)
         self.refresh_model_matrix()
@@ -50,8 +85,8 @@ class Object:
 
         rotation = np.array(axis) * radian
         self.rotation += rotation
-        rotation_mat = rotation_matrix_all(rotation)
-        self.model_matrix = multiply_transformations([rotation_mat, self.model_matrix])
+        # TODO proper gradual change
+        self.set_rot_rad(self.rotation)
 
         if around_self:
             self.translate(temp_position)
@@ -65,28 +100,10 @@ class Object:
     
     def set_scale_single(self, scale: float):
         self.set_scale(np.array([scale, scale, scale], dtype=np.float32))
-
-    def scale_by(self, scale: np.ndarray):
-        self.scale += scale
-        scale_mat = scale_matrix(scale)
-        self.model_matrix = multiply_transformations([scale_mat, self.model_matrix])
-
-    def scale_by_single(self, scale: float):
-        self.scale_by(np.array([scale, scale, scale], dtype=np.float32))
-
-    def world_to_local(self, point: np.ndarray) -> np.ndarray:
-        """Converte ponto do mundo para o espaço local do objeto"""
-        return transform_vector(point, np.linalg.inv(self.model_matrix))
     
-    def local_to_world(self, point: np.ndarray) -> np.ndarray:
-        """Converte ponto do espaço local do objeto para o mundo"""
-        return transform_vector(point, self.model_matrix)
-
-    def render(self, parent_transformation_matrix: np.ndarray, renderer: Renderer) -> None:
-        """Renderiza o objeto e seus filhos com base na matriz do pai"""
-        world_mat = np.dot(parent_transformation_matrix, self.model_matrix)
-        for child in self.children:
-            child.render(world_mat, renderer)
+    @property
+    def world_position(self):
+        return self.world_transformation_matrix[:3, 3]
 
     def destroy(self):
         """Destrói o objeto e seus filhos"""
@@ -97,3 +114,8 @@ class Object:
         """Atualiza o objeto e seus filhos"""
         for child in self.children:
             child.update(*args)
+    
+    def render(self, renderer: Renderer):
+        """Renderiza o objeto e seus filhos"""
+        for child in self.children:
+            child.render(renderer)
