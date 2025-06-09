@@ -9,17 +9,20 @@ from rendering.litmode import LitMode
 class Elemental(Object):
     def __init__(self):
         super().__init__()
+        
         self.elemental_mesh = MeshObject("elemental-fire/FireElemental.obj", lit_mode=LitMode.UNLIT)
-        self.add_child(self.elemental_mesh)
         self.elemental_mesh.set_scale_single(0.25)
         self.elemental_mesh.set_rot_deg([0, -90, 0])
-        teste = MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT)
-        teste.set_scale_single(4)
+        self.add_child(self.elemental_mesh)
+
+        self.light = LightObject(LightData("Elemental Fire Light", [1, 0.1, 0], default_intensity=0.5, max_intensity=1.5))
+        self.light.set_pos(np.array([0, 2.5, 0], dtype=np.float32))
+        self.add_child(self.light)
+
         self.hovering = False
-        
-        
     
     def update(self, input, delta_time):
+        super().update(input, delta_time)
         #flutuar
         y_shift = np.sin(glfw.get_time() * self.hovering_frequency*2) * .15
         self.set_pos([self.position[0], self.anchor_y + y_shift, self.position[2]])

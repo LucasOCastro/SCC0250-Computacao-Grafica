@@ -37,7 +37,7 @@ class Scene:
 
         self.ambient_light = LightData("Ambient Light", [1, 1, 1])
         self.exterior_lights: list[LightData] = [light1.light_data]
-        self.interior_lights: list[LightData] = [self.lamp_light_front.light_data, self.lamp_light_back.light_data, self.elemental_fire_light.light_data]
+        self.interior_lights: list[LightData] = [self.lamp_light_front.light_data, self.lamp_light_back.light_data, self.fire_elemental.light.light_data]
     
     def get_all_lights(self) -> list[LightData]:
         return [self.ambient_light] + self.exterior_lights + self.interior_lights
@@ -75,14 +75,13 @@ class Scene:
         self.lamp = MeshObject("lamp/HangingLamp.obj", lit_mode=LitMode.LIT)
         self.lamp.set_pos([0, shroom_floor_height + 44, -50])
         #duas luzes para garantir q a lampada seja iluminada
-        self.lamp_light_front = LightObject(LightData("Lamp Light", [0, 0.8, 0.5], default_intensity=0.5, max_intensity=.75))
-        self.lamp_light_back = LightObject(LightData("Lamp Light", [0, 0.8, 0.5]))
+        lamp_light = LightData("Lamp Light", [0, 0.8, 0.5], default_intensity=0.5, max_intensity=.75)
+        self.lamp_light_front = LightObject(lamp_light)
+        self.lamp_light_back = LightObject(lamp_light)
         #atribuição garanti q possuem o mesmo editavel
-        self.lamp_light_back.light_data.intensity = self.lamp_light_front.light_data.intensity
         self.lamp_light_front.set_pos([0, shroom_floor_height + 21, -49])
         self.lamp_light_back.set_pos([0, shroom_floor_height + 21, -51])
 
-        container.add_child(MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT))
         self.lamp.set_scale_single(0.01)
         container.add_child(self.lamp)
         container.add_child(self.lamp_light_front)
@@ -90,14 +89,12 @@ class Scene:
         self.cauldron = Cauldron()
         self.cauldron.set_pos([0, shroom_floor_height, -52])
         container.add_child(self.cauldron)
+
         self.fire_elemental = Elemental()
         self.fire_elemental.set_pos([10, shroom_floor_height + 5, -50])
-        
-        self.elemental_fire_light = LightObject(LightData("Elemental Fire Light", [1, 0.1, 0], default_intensity=0.5, max_intensity=1.5))
-        self.elemental_fire_light.set_pos(self.fire_elemental.position + np.array([0, 2.5, 0], dtype=np.float32))
         self.fire_elemental.hover(hovering_frequency=1.0)
         container.add_child(self.fire_elemental)
-        container.add_child(self.elemental_fire_light)
+
         return container
     
     def _gen_exterior(self):
