@@ -42,9 +42,6 @@ def main():
         x = np.cos(time * 3) * 0
         y = np.sin(time * 3) * 50
         scene.test_light_1.set_pos(np.array([x, 10, y], dtype=np.float32) + scene.frog.position)
-        x = np.cos(time * 3) * 5
-        y = np.sin(time * 3) * 5
-        scene.test_light_2.set_pos(np.array([x, 10, y], dtype=np.float32) + scene.witch.position)
         
         # Renderiza a cena
         scene.skybox.set_pos(camera.position)
