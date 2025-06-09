@@ -21,7 +21,7 @@ class Elemental(Object):
     
     def update(self, input, delta_time):
         #flutuar
-        y_shift = np.sin(glfw.get_time() * self.hovering_frequency*2) *15* delta_time
+        y_shift = np.sin(glfw.get_time() * self.hovering_frequency*2) * .15
         self.set_pos([self.position[0], self.anchor_y + y_shift, self.position[2]])
 
     #começa ou para de flutuar
