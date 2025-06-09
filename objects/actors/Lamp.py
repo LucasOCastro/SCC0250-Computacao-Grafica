@@ -36,9 +36,6 @@ class Lamp(Object):
     def _make_light(self, side_multiplier: int) -> LightObject:
         light = LightObject(LightData(f"Luz {side_multiplier}", [0, 0.8, 0.5], default_intensity=0.5, max_intensity=.75))
         light.set_pos([0, -23, side_multiplier])
-        test_mesh = MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT)
-        test_mesh.set_scale_single(2)
-        light.add_child(test_mesh)
         return light
     
     

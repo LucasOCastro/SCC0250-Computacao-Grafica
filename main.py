@@ -29,19 +29,14 @@ def main():
     input = Input(window)
     scene_input = SceneInput(scene, renderer, input, window)
 
-    time = 0
     while not window.should_close():
         window.pre_render()
         delta_time = window.delta_time
-        time += delta_time
 
         # Atualiza inputs
         camera.update(input, delta_time)
         scene_input.update(delta_time)
         input.clear_deltas()
-        x = np.cos(time * 3) * 0
-        y = np.sin(time * 3) * 50
-        scene.test_light_1.set_pos(np.array([x, 10, y], dtype=np.float32) + scene.frog.position)
         
         # Renderiza a cena
         scene.skybox.set_pos(camera.position)

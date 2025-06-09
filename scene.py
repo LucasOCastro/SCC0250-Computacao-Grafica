@@ -1,51 +1,32 @@
 import numpy as np
 from OpenGL.GL import *
 from objects.object import Object
-from objects.lightobject import LightObject
 from objects.meshobject import MeshObject
 from objects.actors.Cauldron import Cauldron
 from objects.actors.Gnome import Gnome
 from objects.actors.Frog import FrogCrowned
 from objects.actors.Elemental import Elemental
 from objects.actors.Lamp import Lamp
+from objects.actors.Firefly import Firefly
 from rendering.renderer import Renderer
 from rendering.lightdata import LightData
 from rendering.litmode import LitMode;
 from camera import Camera
 
 class Scene:
-    def DEBUG_make_light(self, name: str, pos: np.ndarray, color: np.ndarray) -> LightObject:
-        light_obj = LightObject(LightData(name, color))
-        light_obj.set_pos(pos)
-        light_mesh = MeshObject("particles/skull1/Skull.obj", lit_mode=LitMode.UNLIT)
-        light_mesh.set_scale_single(20)
-        light_obj.add_child(light_mesh)
-        return light_obj
-
     def __init__(self):
         self.container = Object()
         self.interior_container = self._gen_interior()
         self.exterior_container = self._gen_exterior()
         self.container.add_children([self.interior_container, self.exterior_container])
 
-        # TODO testing light, think of alternative to register_light_source
-        light_pos = self.frog.position + np.array([0, 10, 0], dtype=np.float32)
-        light1 = self.DEBUG_make_light("External Light", light_pos, [0, 1, 1])
-        self.exterior_container.add_child(light1)
-
-
-        self.test_light_1 = light1
-
         self.ambient_light = LightData("Ambient Light", [1, 1, 1])
-        self.exterior_lights: list[LightData] = [light1.light_data]
-        self.interior_lights: list[LightData] = [
-            *self.lamp.light_data,
-            self.fire_elemental.light.light_data
-        ]
+        self.exterior_lights: list[LightData] = [self.firefly.light.light_data]
+        self.interior_lights: list[LightData] = [*self.lamp.light_data, self.fire_elemental.light.light_data]
         
         self.editables = [
             self.ambient_light.intensity,
-            light1.light_data.intensity,
+            self.firefly.editable_group,
             self.lamp.editable_group,
             self.fire_elemental.editable_group
         ]
@@ -121,7 +102,7 @@ class Scene:
         
         self.frog_house = MeshObject("frog_house/frog_house.obj")
         self.frog_house.set_pos(frog_pos + [0, 0, -30])
-        self.frog_house.set_scale_single(8)
+        self.frog_house.set_scale_single(6)
         container.add_child(self.frog_house)
 
         GNOMES_NUM = 7
@@ -137,5 +118,15 @@ class Scene:
             gnome.set_rot_rad([0, -angle_step*i - np.pi/2, 0]) 
         self.gnomes = gnomes
         container.add_children(gnomes)
+
+
+        firefly_height = 15
+        firefly_center = self.shroom_outer.world_position + np.array([0, firefly_height, 0], dtype=np.float32)
+        firefly_radius = 35
+        self.firefly = Firefly()
+        self.firefly.set_pos(self.frog.world_position + np.array([0, 6, 0], dtype=np.float32))
+        self.firefly.fly_around(firefly_center, firefly_radius, 1.0)
+        self.firefly.hover(1, 2.0)
+        container.add_child(self.firefly)
 
         return container
